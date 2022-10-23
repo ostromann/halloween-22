@@ -29,9 +29,9 @@ class Soundbeam(pygame.sprite.Sprite, pymunk.Circle):
         self.mass = 0.1
         self.elasticity = 1
         self.friction = 0
-        # self.collision_type = COLLISION_TYPES['soundbeam']
-        # self.filter = pymunk.ShapeFilter(
-        #     categories=OBJECT_CATEGORIES['soundbeam'], mask=CATEGORY_MASKS['soundbeam'])
+        self.collision_type = COLLISION_TYPES['soundbeam']
+        self.filter = pymunk.ShapeFilter(
+            categories=OBJECT_CATEGORIES['soundbeam'], mask=CATEGORY_MASKS['soundbeam'])
         space.add(body, self)
 
         self.body.apply_impulse_at_local_point(direction, (0, 0))
@@ -43,7 +43,8 @@ class Soundbeam(pygame.sprite.Sprite, pymunk.Circle):
 
     def decay(self, dt):
         self.volume -= SOUNDBEAM_ATTENUATION * dt
-        print(self.volume)
+        self.unsafe_set_radius(self.radius + SOUNDBEAM_RADIUS_GAIN * dt)
+        # print(self.volume)
         if self.volume <= 0:
             # self.space.remove(self, self.body)
             return True
@@ -61,14 +62,14 @@ class SoundSource():
 
     def emit_soundbeams(self):
         self.soundbeams = []
-        radius = 30
+        radius = 1
         for index in range(SOUNDBEAM_NUMBERS):
             phase_shift = index * 360 / SOUNDBEAM_NUMBERS * math.pi/180
             x = radius * math.sin((math.pi * 2 + phase_shift))
             y = radius * math.cos((math.pi * 2 + phase_shift))
 
             pos = (x + self.pos.x, y + self.pos.y)
-            direction = (x, y)
+            direction = (x*SOUNDBEAM_FORCE, y*SOUNDBEAM_FORCE)
             self.soundbeams.append(
                 Soundbeam(self.groups, self.space, pos, direction, self.volume))
 
