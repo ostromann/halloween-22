@@ -4,7 +4,7 @@ import pygame
 import json
 from states.game_world import GameWorld
 
-from joysticks import initializeJoysticks
+from joysticks import initialize_joysticks
 from settings import *
 from states.menues import MainMenu, PauseMenu
 from states.state import FSM
@@ -14,8 +14,8 @@ from debug import debug
 class Game():
     def __init__(self, joysticks):
         pygame.init()
-        self.GAME_W, self.GAME_H = 480, 270
-        self.SCREEN_WIDTH, self.SCREEN_HEIGHT = WIDTH, HEIGHT
+        self.GAME_W, self.GAME_H = 300, 300
+        self.SCREEN_WIDTH, self.SCREEN_HEIGHT = 300, 300
         self.game_canvas = pygame.Surface((self.GAME_W, self.GAME_H))
         self.screen = pygame.display.set_mode(
             (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
@@ -25,13 +25,14 @@ class Game():
             'right': False,
             'up': False,
             'down': False,
+            'space': False,
             'action1': False,
-            'action2': False,
+            'LCTRL': False,
             'start': False,
-            'x': False,
-            'square': False,
-            'circle': False,
-            'triangle': False
+            # 'x': False,
+            # 'square': False,
+            # 'circle': False,
+            # 'triangle': False
         }
         self.joysticks = joysticks
         if len(self.joysticks) > 0:
@@ -76,7 +77,7 @@ class Game():
 
     def game_loop(self):
         while self.playing:
-            time.sleep(0.01)
+            # time.sleep(0.01)
             self.get_dt()
             self.get_events()
             self.fsm.execute()
@@ -100,10 +101,10 @@ class Game():
                     self.actions['up'] = True
                 if event.key == pygame.K_s:
                     self.actions['down'] = True
-                if event.key == pygame.K_p:
-                    self.actions['action1'] = True
-                if event.key == pygame.K_o:
-                    self.actions['action2'] = True
+                if event.key == pygame.K_SPACE:
+                    self.actions['space'] = True
+                if event.key == pygame.K_LCTRL:
+                    self.actions['LCTRL'] = True
                 if event.key == pygame.K_RETURN:
                     self.actions['start'] = True
 
@@ -116,82 +117,12 @@ class Game():
                     self.actions['up'] = False
                 if event.key == pygame.K_s:
                     self.actions['down'] = False
-                if event.key == pygame.K_p:
-                    self.actions['action1'] = False
-                if event.key == pygame.K_o:
-                    self.actions['action2'] = False
+                if event.key == pygame.K_SPACE:
+                    self.actions['space'] = False
+                if event.key == pygame.K_LCTRL:
+                    self.actions['LCTRL'] = False
                 if event.key == pygame.K_RETURN:
                     self.actions['start'] = False
-
-            if self.joystick_detected:
-                # HANDLES BUTTON PRESSES
-                if event.type == pygame.JOYBUTTONDOWN:
-                    if event.button == self.button_keys['left_arrow']:
-                        self.actions['left'] = True
-                    if event.button == self.button_keys['right_arrow']:
-                        self.actions['right'] = True
-                    if event.button == self.button_keys['down_arrow']:
-                        self.actions['up'] = True
-                    if event.button == self.button_keys['up_arrow']:
-                        self.actions['down'] = True
-                    if event.button == self.button_keys['options']:
-                        self.actions['start'] = True
-                    if event.button == self.button_keys['x']:
-                        self.actions['x'] = True
-                    if event.button == self.button_keys['circle']:
-                        self.actions['circle'] = True
-                    if event.button == self.button_keys['square']:
-                        self.actions['square'] = True
-                    if event.button == self.button_keys['triangle']:
-                        self.actions['triangle'] = True
-                # HANDLES BUTTON RELEASES
-                if event.type == pygame.JOYBUTTONUP:
-                    if event.button == self.button_keys['left_arrow']:
-                        self.actions['left'] = False
-                    if event.button == self.button_keys['right_arrow']:
-                        self.actions['right'] = False
-                    if event.button == self.button_keys['down_arrow']:
-                        self.actions['up'] = False
-                    if event.button == self.button_keys['up_arrow']:
-                        self.actions['down'] = False
-                    if event.button == self.button_keys['options']:
-                        self.actions['start'] = False
-                    if event.button == self.button_keys['x']:
-                        self.actions['x'] = False
-                    if event.button == self.button_keys['circle']:
-                        self.actions['circle'] = False
-                    if event.button == self.button_keys['square']:
-                        self.actions['square'] = False
-                    if event.button == self.button_keys['triangle']:
-                        self.actions['triangle'] = False
-
-                        #  # HANDLES ANALOG INPUTS
-                if event.type == pygame.JOYAXISMOTION:
-                    self.analog_keys[event.axis] = event.value
-
-                    # Horizontal Analog
-                    if abs(self.analog_keys[0]) > CONTROLLER_DEADZONE:
-                        if self.analog_keys[0] < -.2:
-                            self.actions['left'] = True
-                        else:
-                            self.actions['left'] = False
-                        if self.analog_keys[0] > .2:
-                            self.actions['right'] = True
-                        else:
-                            self.actions['right'] = False
-                    # Vertical Analog
-                    if abs(self.analog_keys[1]) > CONTROLLER_DEADZONE:
-                        if self.analog_keys[1] < -CONTROLLER_DEADZONE:
-                            self.actions['up'] = True
-                        else:
-                            self.actions['up'] = False
-                        if self.analog_keys[1] > CONTROLLER_DEADZONE:
-                            self.actions['down'] = True
-                        else:
-                            self.actions['down'] = False
-
-                    # Triggers
-                    # Ignore triggers for now
 
     def load_assets(self):
         # Create pointers to directories
@@ -199,9 +130,9 @@ class Game():
         # self.sprite_dir = os.path.join(self.assets_dir, "sprites")
         self.font_dir = os.path.join(self.assets_dir, "fonts")
         self.title_font = pygame.font.Font(os.path.join(
-            self.font_dir, "BLACKOUT.TTF"), 120)
+            self.font_dir, "BLACKOUT.TTF"), 50)
         self.main_font = pygame.font.Font(os.path.join(
-            self.font_dir, "BLACKOUT.TTF"), 60)
+            self.font_dir, "BLACKOUT.TTF"), 12)
 
     def update(self):
         self.state_stack[-1].update(self.dt, self.actions)
@@ -227,12 +158,13 @@ class Game():
         surface.blit(text_surface, text_rect)
 
     def reset_keys(self):
+        pass
         for action in self.actions:
             self.actions[action] = False
 
 
 if __name__ == "__main__":
-    joysticks = initializeJoysticks()
+    joysticks = initialize_joysticks()
     g = Game(joysticks)
     while g.running:
         g.game_loop()

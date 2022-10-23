@@ -24,7 +24,7 @@ class MainMenu(State):
         pass
 
     def update(self):
-        if self.game.actions["start"] or self.game.actions['x']:
+        if self.game.actions['start']:
             self.game.fsm.push('run-through')
         self.game.reset_keys()
 

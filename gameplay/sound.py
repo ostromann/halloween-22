@@ -1,77 +1,105 @@
 import pygame
 import pymunk
-import math
+from math import sin, cos, pi
+from random import random
 
 from settings import *
 
 
-'''
-body = pymunk.Body(body_type=pymunk.Body.DYNAMIC)
-        body.position = pos
-
-        super().__init__(body, radius, offset=(0, 0))
-        self.mass = mass
-        self.elasticity = 0.4
-        self.friction = 0.4
-        self.color = (255, 0, 0, 0)
-        self.collision_type = config.collision_types['asteroid']
-        self.filter = pymunk.ShapeFilter(
-            categories=config.object_categories['asteroid'], mask=config.category_masks['asteroid'])
-'''
-
-
-class Soundbeam(pygame.sprite.Sprite, pymunk.Circle):
-    def __init__(self, groups, space, pos, direction, volume):
-        pygame.sprite.Sprite.__init__(self, groups)
+class Soundbeam(pygame.sprite.Sprite):
+    def __init__(self, groups, collision_sprites, pos, direction, volume):
+        super().__init__(groups)
         self.volume = volume
-        body = self.get_body(*pos)
-        pymunk.Circle.__init__(self, body, SOUNDBEAM_RADIUS)
-        self.mass = 0.1
-        self.elasticity = 1
-        self.friction = 0
-        self.collision_type = COLLISION_TYPES['soundbeam']
-        self.filter = pymunk.ShapeFilter(
-            categories=OBJECT_CATEGORIES['soundbeam'], mask=CATEGORY_MASKS['soundbeam'])
-        space.add(body, self)
+        self.pos = pygame.math.Vector2(pos)
 
-        self.body.apply_impulse_at_local_point(direction, (0, 0))
+        self.size_gain = 1
+        self.speed = SOUNDBEAM_SPEED
+        self.direction = direction
 
-    def get_body(self, x, y):
-        body = pymunk.Body()
-        body.position = (x, y)
-        return body
+        self.rect = pygame.rect.Rect(
+            pos.x - SOUNDBEAM_SIZE/2, pos.y - SOUNDBEAM_SIZE/2, SOUNDBEAM_SIZE, SOUNDBEAM_SIZE)
+        self.orig_rect = self.rect.copy()
+
+        self.surf = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+        bright = self.volume / SOUNDBEAM_MAX_LOUDNESS * 255
+        self.surf.fill((bright, bright, bright))
+        self.surf.set_alpha(bright)
+        self.image = self.surf
+
+        self.collision_sprites = collision_sprites
 
     def decay(self, dt):
         self.volume -= SOUNDBEAM_ATTENUATION * dt
-        self.unsafe_set_radius(self.radius + SOUNDBEAM_RADIUS_GAIN * dt)
-        # print(self.volume)
+        self.size_gain += SOUNDBEAM_SIZE_GAIN * dt
+        self.rect = self.orig_rect.inflate(
+            round(self.size_gain), round(self.size_gain))
         if self.volume <= 0:
-            # self.space.remove(self, self.body)
-            return True
-        return False
+            self.kill()
+
+    def move(self, dt):
+        self.pos += self.direction * self.speed * dt * 60
+
+        self.rect.centerx = round(self.pos.x)
+        self.collision('horizontal')
+
+        self.rect.centery = round(self.pos.y)
+        self.collision('vertical')
+
+    def collision(self, direction):
+        if direction == 'horizontal':
+            for sprite in self.collision_sprites:
+                if sprite.rect.colliderect(self.rect):
+                    if self.direction.x > 0:    # moving right
+                        self.pos.x = sprite.rect.left - self.rect.width / 2
+                        self.direction.x *= -1
+                    elif self.direction.x < 0:    # moving left
+                        self.pos.x = sprite.rect.right + self.rect.width / 2
+                        self.direction.x *= -1
+                    self.rect.centerx = round(self.pos.x)
+
+        if direction == 'vertical':
+            for sprite in self.collision_sprites:
+                if sprite.rect.colliderect(self.rect):
+                    if self.direction.y > 0:    # moving down
+                        self.pos.y = sprite.rect.top - self.rect.height / 2
+                        self.direction.y *= -1
+                    elif self.direction.y < 0:    # moving up
+                        self.pos.y = sprite.rect.bottom + self.rect.height / 2
+                        self.direction.y *= -1
+                    self.rect.centery = round(self.pos.y)
+
+    def animate(self, dt):
+        self.surf = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+        bright = self.volume / SOUNDBEAM_MAX_LOUDNESS * 255
+        self.surf.fill((bright, bright, bright))
+        self.surf.set_alpha(bright)
+        self.image = self.surf
+
+    def update(self, dt, actions):
+        self.animate(dt)
+        self.decay(dt)
+        self.move(dt)
 
 
 class SoundSource():
-    def __init__(self, groups, space, pos, volume):
+    def __init__(self, groups, collision_sprites, pos, volume):
         # super().__init__(self, groups)
         self.groups = groups
         self.volume = volume
         self.pos = pygame.math.Vector2(pos)
-        self.space = space
+        self.collision_sprites = collision_sprites
         self.emit_soundbeams()
+        # play sound
 
     def emit_soundbeams(self):
         self.soundbeams = []
-        radius = 1
         for index in range(SOUNDBEAM_NUMBERS):
-            phase_shift = index * 360 / SOUNDBEAM_NUMBERS * math.pi/180
-            x = radius * math.sin((math.pi * 2 + phase_shift))
-            y = radius * math.cos((math.pi * 2 + phase_shift))
-
-            pos = (x + self.pos.x, y + self.pos.y)
-            direction = (x*SOUNDBEAM_FORCE, y*SOUNDBEAM_FORCE)
+            phase_shift = index * 360 / SOUNDBEAM_NUMBERS * pi/180
+            x = sin((pi * 2 + phase_shift))
+            y = cos((pi * 2 + phase_shift))
+            direction = pygame.math.Vector2(x, y)
             self.soundbeams.append(
-                Soundbeam(self.groups, self.space, pos, direction, self.volume))
+                Soundbeam(self.groups, self.collision_sprites, self.pos, direction, self.volume))
 
     def get_soundbeams(self):
         return self.soundbeams

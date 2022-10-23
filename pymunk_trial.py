@@ -7,6 +7,7 @@ import math
 from settings import *
 
 from gameplay.sound import SoundSource
+from gameplay.boundary import Boundary
 
 pygame.init()
 
@@ -22,28 +23,7 @@ def draw(space, window, draw_options, ):
     pygame.display.update()
 
 
-def create_boundaries(space, width, height):
-    rects = [
-        [(width/2, height - 10), (width, 20)],  # floor
-        [(width/2, 10), (width, 20)],  # ceiling
-        [(10, height/2), (20, height)],  # left wall
-        [(width-10, height/2), (20, height)],  # right wall
-    ]
-
-    obstacles = []
-    for pos, size in rects:
-        body = pymunk.Body(body_type=pymunk.Body.STATIC)
-        body.position = pos
-        shape = pymunk.Poly.create_box(body, size)
-        shape.elasticity = 1
-        shape.friction = 0
-        shape.collision_type = COLLISION_TYPES['obstacle']
-        shape.filter = pymunk.ShapeFilter(
-            categories=OBJECT_CATEGORIES['obstacle'], mask=CATEGORY_MASKS['obstacle'])
-        obstacles.append(shape)
-        space.add(body, shape)
-
-    return obstacles
+def create_boundaries():
 
 
 def create_lines(space):
@@ -107,13 +87,6 @@ def run():
     soundbeams = []
     obstacles = create_boundaries(space, WIDTH, HEIGHT)
 
-    # Collision
-    # h = space.add_collision_handler(
-    #     COLLISION_TYPES['soundbeam'], COLLISION_TYPES['obstacle'])
-    # h.data['obstacles'] = obstacles
-    # h.data['soundbeams'] = soundbeams
-    # h.post_solve = spawn_sound_source_at_collision
-
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -147,7 +120,7 @@ def run():
                 circle_surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
                 circle_rect = pygame.rect.Rect(l, t, w, h)
                 bright = soundbeam.volume/SOUNDBEAM_MAX_LOUDNESS * 255
-                pygame.draw.ellipse(
+                pygame.draw.rect(
                     circle_surf, (bright, bright, bright), circle_rect)
                 # alpha = soundbeam.volume/SOUNDBEAM_MAX_LOUDNESS * 255 / 20
                 # print(alpha)
