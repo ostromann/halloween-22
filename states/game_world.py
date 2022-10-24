@@ -167,9 +167,9 @@ class GameWorld(State):
         self.player = Player(
             [self.visible_sprites, self.player_sprite], self.collision_sprites, self.alpha_sprites, (250, 250))
 
-        # # Key
-        # Key([self.visible_sprites, self.key_sprites], [self.collision_sprites],
-        #     (200, 80), self.player, id=1)
+        # Key
+        Key([self.visible_sprites, self.key_sprites], [self.collision_sprites],
+            (200, 80), self.player, id=1)
         # Enemy
         Enemy([self.visible_sprites], self.collision_sprites, self.alpha_sprites,
               self.alpha_sprites, (30, 80), [(250, 80), (30, 80)], self.player)

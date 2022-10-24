@@ -11,8 +11,7 @@ class Enemy(pygame.sprite.Sprite):
         # general setup
         super().__init__(groups)
 
-        self.image = pygame.Surface((20, 20))
-        self.image.fill((255, 0, 0))
+        self.image = pygame.Surface((20, 20), pygame.SRCALPHA)
         self.rect = self.image.get_rect(topleft=pos)
         self.pos = pygame.math.Vector2(self.rect.center)
         self.hitbox = self.rect
@@ -44,6 +43,15 @@ class Enemy(pygame.sprite.Sprite):
         # self.fsm.states['charge'] = ChargeState('charge', next_state='move')
         # self.fsm.current_state = self.fsm.states['spawn']
 
+    def render(self):
+        new_surf = pygame.Surface((20, 20), pygame.SRCALPHA)
+        pygame.draw.circle(new_surf, (255, 0, 0, 255), (10, 10), 10)
+        radius = self.notice_volume_meter / self.notice_volume_threshold * 10
+        if radius >= 9:
+            radius = 9
+        pygame.draw.circle(new_surf, (0, 0, 0, 255), (10, 10), radius)
+        self.image.blit(new_surf, (0, 0))
+
     def move_to_point(self, dt):
         # self.destination = self.destination_points[self.destination_point_index]
         _, direction = get_distance_direction_a_to_b(
@@ -56,9 +64,9 @@ class Enemy(pygame.sprite.Sprite):
         self.pos += self.direction * self.speed * dt * 60
 
         self.hitbox.centerx = round(self.pos.x)
-        self.collision('horizontal')
+        # self.collision('horizontal')
         self.hitbox.centery = round(self.pos.y)
-        self.collision('vertical')
+        # self.collision('vertical')
 
         self.rect.center = self.hitbox.center
 
@@ -115,7 +123,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def decay_noise_meter(self, dt):
         if self.notice_volume_meter > 0:
-            self.notice_volume_meter -= ENEMY_VOLUME_THRESHOLD * dt
+            self.notice_volume_meter -= ENEMY_VOLUME_DECAY * dt
         else:
             self.notice_volume_meter = 0
 
@@ -131,6 +139,7 @@ class Enemy(pygame.sprite.Sprite):
             #     f'destination {old_destination} reached by {distance}: next destination point {self.destination}')
 
     def update(self, dt, actions):
+        self.render()
         self.fill_notice_meter()
         self.check_notice_meter()
         self.decay_noise_meter(dt)
