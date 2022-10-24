@@ -29,27 +29,18 @@ class Enemy(pygame.sprite.Sprite):
         self.last_footstep = None
 
         # interaction
-        self.notice_volume_meter = 0
-        self.notice_volume_threshold = ENEMY_VOLUME_THRESHOLD
+        self.noise_meter = {}
+        self.noise_meter_threshold = SOUNDBEAM_MAX_LOUDNESS * 0.3
         self.notice_volume_decay = ENEMY_VOLUME_DECAY
         self.player = player
-
-        # FSM setup
-        # TODO: Later
-        # self.fsm = EntityFSM(self)
-        # self.fsm.states['spawn'] = SpawnState('spawn',MONSTER_SPAWN_DURATION,next_state='move')
-        # self.fsm.states['move'] = MoveState('move', next_state='precharge')
-        # self.fsm.states['precharge'] = SpawnState('spawn',self.stats['precharge_duration'],next_state='precharge')
-        # self.fsm.states['charge'] = ChargeState('charge', next_state='move')
-        # self.fsm.current_state = self.fsm.states['spawn']
 
     def render(self):
         new_surf = pygame.Surface((20, 20), pygame.SRCALPHA)
         pygame.draw.circle(new_surf, (255, 0, 0, 255), (10, 10), 10)
-        radius = self.notice_volume_meter / self.notice_volume_threshold * 10
-        if radius >= 9:
-            radius = 9
-        pygame.draw.circle(new_surf, (0, 0, 0, 255), (10, 10), radius)
+        # radius = self.notice_volume_meter / self.notice_volume_threshold * 10
+        # if radius >= 9:
+        #     radius = 9
+        # pygame.draw.circle(new_surf, (0, 0, 0, 255), (10, 10), radius)
         self.image.blit(new_surf, (0, 0))
 
     def move_to_point(self, dt):
@@ -62,12 +53,8 @@ class Enemy(pygame.sprite.Sprite):
 
     def move(self, dt):
         self.pos += self.direction * self.speed * dt * 60
-
         self.hitbox.centerx = round(self.pos.x)
-        # self.collision('horizontal')
         self.hitbox.centery = round(self.pos.y)
-        # self.collision('vertical')
-
         self.rect.center = self.hitbox.center
 
         if self.last_footstep:
@@ -78,27 +65,6 @@ class Enemy(pygame.sprite.Sprite):
         else:
             self.spawn_footprint()
 
-    def collision(self, direction):
-        if direction == 'horizontal':
-            for sprite in self.collision_sprites:
-                if sprite.hitbox.colliderect(self.hitbox):
-                    if self.direction.x > 0:    # moving right
-                        self.pos.x = sprite.hitbox.left - self.hitbox.width / 2
-                    elif self.direction.x < 0:    # moving left
-                        self.pos.x = sprite.hitbox.right + self.hitbox.width / 2
-                    self.hitbox.centerx = round(self.pos.x)
-                    self.rect.centerx = round(self.pos.x)
-
-        if direction == 'vertical':
-            for sprite in self.collision_sprites:
-                if sprite.hitbox.colliderect(self.hitbox):
-                    if self.direction.y > 0:    # moving down
-                        self.pos.y = sprite.hitbox.top - self.hitbox.height / 2
-                    elif self.direction.y < 0:    # moving up
-                        self.pos.y = sprite.hitbox.bottom + self.hitbox.height / 2
-                    self.hitbox.centery = round(self.pos.y)
-                    self.rect.centery = round(self.pos.y)
-
     def spawn_footprint(self):
         if not self.last_footstep:
             self.last_footstep = Footstep(
@@ -107,25 +73,38 @@ class Enemy(pygame.sprite.Sprite):
             self.last_footstep = Footstep([self.alpha_sprites], self.collision_sprites, self.pos,
                                           self.direction, volume=ENEMY_FOOTSTEP_VOLUME, left=not self.last_footstep.left, origin_type='enemy')
 
-    def fill_notice_meter(self):
+    def update_noise_meter(self):
         for sprite in self.sound_sprites:
             if sprite.rect.colliderect(self.hitbox):
-                if sprite.origin_type == 'player':
-                    self.notice_volume_meter += sprite.volume
-                    # TODO: identify the source from which the sound came.
-        print(f'noise-meter: {self.notice_volume_meter}')
+                origin = sprite.origin_type
+                if origin not in self.noise_meter.keys():
+                    self.noise_meter[origin] = 0
+                self.noise_meter[origin] = max(
+                    [0, self.noise_meter[origin], sprite.volume])
 
-    def check_notice_meter(self):
-        if self.notice_volume_meter >= self.notice_volume_threshold:
-            # TODO: The largest contributor to the sound wave
-            self.destination = self.player.pos
-            self.notice_volume_meter = 0
+                # TODO: identify the source from which the sound came.
+        # print(f'noise-meter: {self.noise_meter}')
+
+    def check_noise_meter(self):
+        aggro = None
+        for key, val in self.noise_meter.items():
+            if val >= self.noise_meter_threshold:
+                aggro = key
+
+        if aggro:
+            print(f"ROAR! I'm so angry at {key}.")
+        else:
+            print('Okay! I have calmed down!')
+
+            # if self.notice_volume_meter >= self.notice_volume_threshold:
+            #     # TODO: The largest contributor to the sound wave
+            #     self.destination = self.player.pos
+            #     self.notice_volume_meter = 0
 
     def decay_noise_meter(self, dt):
-        if self.notice_volume_meter > 0:
-            self.notice_volume_meter -= ENEMY_VOLUME_DECAY * dt
-        else:
-            self.notice_volume_meter = 0
+        for key, val in self.noise_meter.items():
+            self.noise_meter[key] = max(
+                [0, val - ENEMY_VOLUME_DECAY * dt])
 
     def check_destination_reached(self):
         distance, _ = get_distance_direction_a_to_b(self.pos, self.destination)
@@ -140,8 +119,8 @@ class Enemy(pygame.sprite.Sprite):
 
     def update(self, dt, actions):
         self.render()
-        self.fill_notice_meter()
-        self.check_notice_meter()
+        self.update_noise_meter()
+        self.check_noise_meter()
         self.decay_noise_meter(dt)
         self.check_destination_reached()
         self.move_to_point(dt)
