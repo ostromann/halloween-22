@@ -94,8 +94,17 @@ class GameWorld(State):
 
     def startup(self):
         print('GameWorld startup')
-        self.color = choice([(200, 50, 0), (0, 200, 50), (50, 0, 200)])
-        self.orig_color = self.color
+
+        # Surface set up
+        self.visible_surf = pygame.Surface((WIDTH, HEIGHT))
+        self.alpha_surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        self.decay_surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+
+        # Surface initialization
+        self.alpha_surf.fill((0, 0, 0, 255))
+
+        self.bg_image = pygame.image.load(os.path.join(
+            'assets', 'graphics', 'background.png'))
 
         # sprite group setup
         # self.visible_sprites = YSortCameraGroup()
@@ -124,13 +133,13 @@ class GameWorld(State):
 
         # Additional Walls
         Boundary([self.visible_sprites, self.collision_sprites],
-                 (0, 150), (150, WALL_WIDTH))
+                 (0, 100), (100, WALL_WIDTH))
         Boundary([self.visible_sprites, self.collision_sprites],
                  (150, 150), (WALL_WIDTH, 80))
 
         # Player
         self.player = Player(
-            [self.visible_sprites], self.collision_sprites, self.alpha_sprites, (20, 20))
+            [self.visible_sprites], self.collision_sprites, self.alpha_sprites, (250, 250))
 
     def suspend(self):
         print('GameWorld suspend')
@@ -164,24 +173,22 @@ class GameWorld(State):
         # self.fsm.update()
 
     def render(self):
-        self.display_surface.fill((0, 0, 0))
+        # Fade out to black with decay_surf
+        self.decay_surf.fill((0, 0, 0, 1))
 
-        # for sprite in self.visible_sprites:
-        #     self.display_surface.blit(sprite.image, sprite.rect.topleft)
+        self.visible_surf.blit(self.bg_image, (0, 0))
+        for sprite in self.visible_sprites:
+            self.visible_surf.blit(sprite.image, sprite.rect.topleft)
 
-        self.alpha_surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-        self.alpha_surf.blit(pygame.image.load(os.path.join(
-            'assets', 'graphics', 'background.png')).convert_alpha(), (0, 0))
-        # self.alpha_surf.set_alpha(0)
         for sprite in self.alpha_sprites:
-            print('blitting alpha sprite')
             self.alpha_surf.blit(
-                sprite.image, sprite.rect.topleft, special_flags=pygame.BLEND_RGBA_MAX)
+                sprite.image, sprite.rect.topleft, special_flags=pygame.BLEND_RGBA_SUB)
 
+        self.alpha_surf.blit(self.decay_surf, (0, 0),
+                             special_flags=pygame.BLEND_RGBA_ADD)
+
+        self.display_surface.blit(self.visible_surf, (0, 0))
         self.display_surface.blit(self.alpha_surf, (0, 0))
-
-        # debug(self.player.direction)
-        # debug(self.game.actions['analog']['L'], 30)
 
         if self.game.dt == 0:
             debug('inf')

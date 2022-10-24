@@ -2,6 +2,8 @@ import pygame
 from random import random
 from gameplay.entity import Entity
 from gameplay.sound import SoundSource
+from gameplay.footstep import Footstep
+from gameplay.utils import *
 from settings import *
 
 
@@ -21,11 +23,24 @@ class Player(pygame.sprite.Sprite):
         self.alpha_sprites = alpha_sprites
 
         self.speed = 1
+        self.last_footstep = None
+
+        # Timer
+        self.stomping = False
+        self.stomp_time = None
+        self.stomp_cooldown = 300
 
     def stomp(self):
         print('stomping')
-        SoundSource(self.groups(), self.alpha_sprites,
+        SoundSource([self.alpha_sprites], self.collision_sprites,
                     self.pos, SOUNDBEAM_MAX_LOUDNESS)
+
+    def cooldowns(self):
+        current_time = pygame.time.get_ticks()
+
+        if self.stomping:
+            if current_time - self.stomp_time >= self.stomp_cooldown:
+                self.stomping = False
 
     def input(self, actions):
         # Movement
@@ -36,19 +51,38 @@ class Player(pygame.sprite.Sprite):
 
         # Click
         if actions['space']:
-            self.stomp()
+            if not self.stomping:
+                self.stomp()
+                self.stomping = True
+                self.stomp_time = pygame.time.get_ticks()
+
+    def spawn_footprint(self):
+        if not self.last_footstep:
+            self.last_footstep = Footstep(
+                [self.alpha_sprites], self.collision_sprites, self.pos, self.direction, volume=FOOTSTEP_VOLUME, left=True)
+        else:
+            self.last_footstep = Footstep([self.alpha_sprites], self.collision_sprites, self.pos,
+                                          self.direction, volume=FOOTSTEP_VOLUME, left=not self.last_footstep.left)
 
     def move(self, dt):
         self.pos += self.direction * self.speed * dt * 60
-        # print(self.pos)
 
         self.hitbox.centerx = round(self.pos.x)
         self.collision('horizontal')
-
         self.hitbox.centery = round(self.pos.y)
         self.collision('vertical')
 
         self.rect.center = self.hitbox.center
+
+        if self.last_footstep:
+            distance, _ = get_distance_direction_a_to_b(
+                self.last_footstep.pos, self.pos)
+            print(
+                f'last footstep {self.last_footstep.pos} self {self.pos} distance {distance}')
+            if distance >= FOOTSTEP_DISTANCE:
+                self.spawn_footprint()
+        else:
+            self.spawn_footprint()
 
     def collision(self, direction):
         if direction == 'horizontal':
@@ -72,5 +106,6 @@ class Player(pygame.sprite.Sprite):
                     self.rect.centery = round(self.pos.y)
 
     def update(self, dt, actions):
+        self.cooldowns()
         self.input(actions)
         self.move(dt)

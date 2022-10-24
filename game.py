@@ -130,7 +130,7 @@ class Game():
         # self.sprite_dir = os.path.join(self.assets_dir, "sprites")
         self.font_dir = os.path.join(self.assets_dir, "fonts")
         self.title_font = pygame.font.Font(os.path.join(
-            self.font_dir, "BLACKOUT.TTF"), 50)
+            self.font_dir, "BLACKOUT.TTF"), 60)
         self.main_font = pygame.font.Font(os.path.join(
             self.font_dir, "BLACKOUT.TTF"), 12)
 
@@ -158,7 +158,6 @@ class Game():
         surface.blit(text_surface, text_rect)
 
     def reset_keys(self):
-        pass
         for action in self.actions:
             self.actions[action] = False
 

@@ -59,7 +59,7 @@ class PauseMenu(State):
         pass
 
     def update(self):
-        if self.game.actions['start'] or self.game.actions['circle']:
+        if self.game.actions['start']:
             self.game.fsm.pop()
         self.game.reset_keys()
         # new_state.enter_state()

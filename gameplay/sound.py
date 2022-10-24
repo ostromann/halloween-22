@@ -21,18 +21,39 @@ class Soundbeam(pygame.sprite.Sprite):
         self.orig_rect = self.rect.copy()
 
         self.surf = pygame.Surface(self.rect.size, pygame.SRCALPHA)
-        bright = self.volume / SOUNDBEAM_MAX_LOUDNESS * 255
-        self.surf.fill((bright, bright, bright))
-        self.surf.set_alpha(bright)
+        bright = int(self.volume / SOUNDBEAM_MAX_LOUDNESS * 255)
+        # self.surf.fill((bright, bright, bright))
+        # self.surf.set_alpha(bright)
         self.image = self.surf
 
         self.collision_sprites = collision_sprites
 
-    def decay(self, dt):
+    def attenuate(self, dt):
         self.volume -= SOUNDBEAM_ATTENUATION * dt
+
+    def propagate(self, dt):
         self.size_gain += SOUNDBEAM_SIZE_GAIN * dt
         self.rect = self.orig_rect.inflate(
             round(self.size_gain), round(self.size_gain))
+
+    def dissolve(self):
+        if self.size_gain >= 2:
+            # spawn 4 new soundbeams, kill itself
+            for i in range(2):
+                for j in range(2):
+                    x = self.rect.topleft[0] + self.rect.width / 2 * i
+                    y = self.rect.topleft[1] + self.rect.height / 2 * i
+
+                    pos = pygame.math.Vector2(x, y)
+                    Soundbeam(self.groups(), self.collision_sprites,
+                              pos, self.direction, self.volume)
+            self.kill()
+
+    def decay(self, dt):
+        self.attenuate(dt)
+        self.propagate(dt)
+        # self.dissolve()
+
         if self.volume <= 0:
             self.kill()
 
@@ -71,8 +92,8 @@ class Soundbeam(pygame.sprite.Sprite):
     def animate(self, dt):
         self.surf = pygame.Surface(self.rect.size, pygame.SRCALPHA)
         bright = self.volume / SOUNDBEAM_MAX_LOUDNESS * 255
-        self.surf.fill((bright, bright, bright))
-        self.surf.set_alpha(bright)
+        self.surf.fill((bright, bright, bright, bright))
+        # self.surf.set_alpha(bright)
         self.image = self.surf
 
     def update(self, dt, actions):
