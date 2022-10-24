@@ -29,6 +29,7 @@ class Game():
             'action1': False,
             'LCTRL': False,
             'start': False,
+            'TAB': False,
             # 'x': False,
             # 'square': False,
             # 'circle': False,
@@ -77,7 +78,7 @@ class Game():
 
     def game_loop(self):
         while self.playing:
-            # time.sleep(0.01)
+            # time.sleep(0.1)
             self.get_dt()
             self.get_events()
             self.fsm.execute()
@@ -107,6 +108,8 @@ class Game():
                     self.actions['LCTRL'] = True
                 if event.key == pygame.K_RETURN:
                     self.actions['start'] = True
+                if event.key == pygame.K_TAB:
+                    self.actions['TAB'] = True
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_a:
@@ -123,6 +126,8 @@ class Game():
                     self.actions['LCTRL'] = False
                 if event.key == pygame.K_RETURN:
                     self.actions['start'] = False
+                if event.key == pygame.K_TAB:
+                    self.actions['TAB'] = False
 
     def load_assets(self):
         # Create pointers to directories
@@ -158,7 +163,7 @@ class Game():
         surface.blit(text_surface, text_rect)
 
     def reset_keys(self):
-        for action in self.actions:
+        for action in ['LCTRL', 'space', 'start', 'TAB']:
             self.actions[action] = False
 
 

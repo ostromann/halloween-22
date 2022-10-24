@@ -31,7 +31,6 @@ class Player(pygame.sprite.Sprite):
         self.stomp_cooldown = 300
 
     def stomp(self):
-        print('stomping')
         SoundSource([self.alpha_sprites], self.collision_sprites,
                     self.pos, SOUNDBEAM_MAX_LOUDNESS)
 
@@ -77,8 +76,6 @@ class Player(pygame.sprite.Sprite):
         if self.last_footstep:
             distance, _ = get_distance_direction_a_to_b(
                 self.last_footstep.pos, self.pos)
-            print(
-                f'last footstep {self.last_footstep.pos} self {self.pos} distance {distance}')
             if distance >= FOOTSTEP_DISTANCE:
                 self.spawn_footprint()
         else:

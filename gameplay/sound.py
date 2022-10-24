@@ -1,16 +1,17 @@
 import pygame
 import pymunk
 from math import sin, cos, pi
-from random import random
+from random import choice, random
 
 from settings import *
 
 
 class Soundbeam(pygame.sprite.Sprite):
-    def __init__(self, groups, collision_sprites, pos, direction, volume):
+    def __init__(self, groups, collision_sprites, pos, direction, volume, origin_type='player'):
         super().__init__(groups)
         self.volume = volume
         self.pos = pygame.math.Vector2(pos)
+        self.origin_type = origin_type
 
         self.size_gain = 1
         self.speed = SOUNDBEAM_SPEED
@@ -32,22 +33,23 @@ class Soundbeam(pygame.sprite.Sprite):
         self.volume -= SOUNDBEAM_ATTENUATION * dt
 
     def propagate(self, dt):
-        self.size_gain += SOUNDBEAM_SIZE_GAIN * dt
-        self.rect = self.orig_rect.inflate(
-            round(self.size_gain), round(self.size_gain))
+        pass
+        # self.size_gain += SOUNDBEAM_SIZE_GAIN * dt
+        # self.rect = self.orig_rect.inflate(
+        #     round(self.size_gain), round(self.size_gain))
 
-    def dissolve(self):
-        if self.size_gain >= 2:
-            # spawn 4 new soundbeams, kill itself
-            for i in range(2):
-                for j in range(2):
-                    x = self.rect.topleft[0] + self.rect.width / 2 * i
-                    y = self.rect.topleft[1] + self.rect.height / 2 * i
+    # def dissolve(self):
+    #     if self.size_gain >= 2:
+    #         # spawn 4 new soundbeams, kill itself
+    #         for i in range(2):
+    #             for j in range(2):
+    #                 x = self.rect.topleft[0] + self.rect.width / 2 * i
+    #                 y = self.rect.topleft[1] + self.rect.height / 2 * i
 
-                    pos = pygame.math.Vector2(x, y)
-                    Soundbeam(self.groups(), self.collision_sprites,
-                              pos, self.direction, self.volume)
-            self.kill()
+    #                 pos = pygame.math.Vector2(x, y)
+    #                 Soundbeam(self.groups(), self.collision_sprites,
+    #                           pos, self.direction, self.volume)
+    #         self.kill()
 
     def decay(self, dt):
         self.attenuate(dt)
@@ -72,10 +74,14 @@ class Soundbeam(pygame.sprite.Sprite):
                 if sprite.rect.colliderect(self.rect):
                     if self.direction.x > 0:    # moving right
                         self.pos.x = sprite.rect.left - self.rect.width / 2
-                        self.direction.x *= -1
+                        self.direction.x *= -1  # bouncing off
+                        self.direction.y += random() * SOUNDBEAM_DIFFRACTION_FACTOR * \
+                            choice([-1, 1])
                     elif self.direction.x < 0:    # moving left
                         self.pos.x = sprite.rect.right + self.rect.width / 2
-                        self.direction.x *= -1
+                        self.direction.x *= -1  # bouncing off
+                        self.direction.y += random() * SOUNDBEAM_DIFFRACTION_FACTOR * \
+                            choice([-1, 1])
                     self.rect.centerx = round(self.pos.x)
 
         if direction == 'vertical':
@@ -83,10 +89,10 @@ class Soundbeam(pygame.sprite.Sprite):
                 if sprite.rect.colliderect(self.rect):
                     if self.direction.y > 0:    # moving down
                         self.pos.y = sprite.rect.top - self.rect.height / 2
-                        self.direction.y *= -1
+                        self.direction.y *= -1  # bouncing off
                     elif self.direction.y < 0:    # moving up
                         self.pos.y = sprite.rect.bottom + self.rect.height / 2
-                        self.direction.y *= -1
+                        self.direction.y *= -1  # bouncing off
                     self.rect.centery = round(self.pos.y)
 
     def animate(self, dt):
@@ -103,12 +109,13 @@ class Soundbeam(pygame.sprite.Sprite):
 
 
 class SoundSource():
-    def __init__(self, groups, collision_sprites, pos, volume):
+    def __init__(self, groups, collision_sprites, pos, volume, origin_type='player'):
         # super().__init__(self, groups)
         self.groups = groups
         self.volume = volume
         self.pos = pygame.math.Vector2(pos)
         self.collision_sprites = collision_sprites
+        self.origin_type = origin_type
         self.emit_soundbeams()
         # play sound
 
@@ -120,7 +127,7 @@ class SoundSource():
             y = cos((pi * 2 + phase_shift))
             direction = pygame.math.Vector2(x, y)
             self.soundbeams.append(
-                Soundbeam(self.groups, self.collision_sprites, self.pos, direction, self.volume))
+                Soundbeam(self.groups, self.collision_sprites, self.pos, direction, self.volume, self.origin_type))
 
     def get_soundbeams(self):
         return self.soundbeams
