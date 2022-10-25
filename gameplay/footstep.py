@@ -11,12 +11,10 @@ class Footstep(pygame.sprite.Sprite):
         self.left = left
 
         self.origin = origin
-        if origin == 'player':
-            size = (10, 25)
-            offset_size = 10
-        elif origin == 'enemy':
-            size = (42, 55)
-            offset_size = 30
+        if self.origin == 'player':
+            offset_size = 5
+        elif self.origin == 'enemy':
+            offset_size = 15
 
         self.direction = pygame.math.Vector2(direction)
         self.angle = -self.direction.as_polar()[1] - 90
@@ -25,8 +23,8 @@ class Footstep(pygame.sprite.Sprite):
 
         self.pos = pygame.math.Vector2(pos + self.offset)
 
-        self.image = pygame.transform.scale(pygame.image.load(
-            f'assets/graphics/footprint_{self.origin}.png').convert_alpha(), size)
+        self.image = pygame.image.load(
+            f'assets/graphics/footprint_{self.origin}.png').convert_alpha()
         self.brightness = 255
 
         if not left:

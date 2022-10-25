@@ -34,7 +34,8 @@ class Soundbeam(pygame.sprite.Sprite):
 
     def propagate(self, dt):
         pass
-        # self.size_gain += SOUNDBEAM_SIZE_GAIN * dt
+        # if self.size_gain <= SOUNDBEAM_MAX_SIZE_GAIN:
+        #     self.size_gain += SOUNDBEAM_SIZE_GAIN * dt
         # self.rect = self.orig_rect.inflate(
         #     round(self.size_gain), round(self.size_gain))
 

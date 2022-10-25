@@ -6,18 +6,18 @@ from settings import *
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, groups, collision_sprites, alpha_sprites, sound_sprites, pos, destination_points, player):
+    def __init__(self, groups, collision_sprites, sound_sprites, pos, destination_points, player, trigger_spawn_footprint, trigger_spawn_soundsource):
 
         # general setup
         super().__init__(groups)
 
-        self.image = pygame.Surface((20, 20), pygame.SRCALPHA)
+        self.image = pygame.Surface((40, 40), pygame.SRCALPHA)
+        self.image.fill((255, 0, 0, 0))
         self.rect = self.image.get_rect(topleft=pos)
         self.pos = pygame.math.Vector2(self.rect.center)
         self.hitbox = self.rect
         self.hitbox.center = self.pos
         self.collision_sprites = collision_sprites
-        self.alpha_sprites = alpha_sprites
         self.sound_sprites = sound_sprites
 
         # movement
@@ -26,7 +26,12 @@ class Enemy(pygame.sprite.Sprite):
         self.destination = self.pos
         self.direction = pygame.math.Vector2()
         self.speed = ENEMY_MOVEMENT_SPEED
-        self.last_footstep = None
+        self.distance_travelled = 0
+
+        # Interaction functions
+        self.left = True  # Player starts on left foot
+        self.trigger_spawn_footprint = trigger_spawn_footprint
+        self.trigger_spawn_soundsource = trigger_spawn_soundsource
 
         # interaction
         self.noise_meter = {}
@@ -34,17 +39,7 @@ class Enemy(pygame.sprite.Sprite):
         self.notice_volume_decay = ENEMY_VOLUME_DECAY
         self.player = player
 
-    def render(self):
-        new_surf = pygame.Surface((20, 20), pygame.SRCALPHA)
-        pygame.draw.circle(new_surf, (255, 0, 0, 255), (10, 10), 10)
-        # radius = self.notice_volume_meter / self.notice_volume_threshold * 10
-        # if radius >= 9:
-        #     radius = 9
-        # pygame.draw.circle(new_surf, (0, 0, 0, 255), (10, 10), radius)
-        self.image.blit(new_surf, (0, 0))
-
     def move_to_point(self, dt):
-        # self.destination = self.destination_points[self.destination_point_index]
         _, direction = get_distance_direction_a_to_b(
             self.pos, self.destination)
         self.direction = direction
@@ -57,21 +52,15 @@ class Enemy(pygame.sprite.Sprite):
         self.hitbox.centery = round(self.pos.y)
         self.rect.center = self.hitbox.center
 
-        # if self.last_footstep:
-        #     distance, _ = get_distance_direction_a_to_b(
-        #         self.last_footstep.pos, self.pos)
-        #     if distance >= ENEMY_FOOTSTEP_DISTANCE:
-        #         self.spawn_footprint()
-        # else:
-        #     self.spawn_footprint()
+        self.distance_travelled += (self.direction *
+                                    self.speed * dt * 60).magnitude()
 
-    # def spawn_footprint(self):
-    #     if not self.last_footstep:
-    #         self.last_footstep = Footstep(
-    #             [self.alpha_sprites], self.collision_sprites, self.pos, self.direction, volume=ENEMY_FOOTSTEP_VOLUME, left=True, origin_type='enemy')
-    #     else:
-    #         self.last_footstep = Footstep([self.alpha_sprites], self.collision_sprites, self.pos,
-    #                                       self.direction, volume=ENEMY_FOOTSTEP_VOLUME, left=not self.last_footstep.left, origin_type='enemy')
+        if self.distance_travelled >= ENEMY_FOOTSTEP_DISTANCE:
+            offset_pos = self.direction * 20
+            self.trigger_spawn_footprint(
+                self.pos+offset_pos, self.direction, ENEMY_FOOTSTEP_VOLUME, self.left, 'enemy')
+            self.left = not self.left
+            self.distance_travelled = 0
 
     def update_noise_meter(self):
         for sprite in self.sound_sprites:
@@ -91,15 +80,10 @@ class Enemy(pygame.sprite.Sprite):
             if val >= self.noise_meter_threshold:
                 aggro = key
 
-        if aggro:
-            print(f"ROAR! I'm so angry at {key}.")
-        else:
-            print('Okay! I have calmed down!')
-
-            # if self.notice_volume_meter >= self.notice_volume_threshold:
-            #     # TODO: The largest contributor to the sound wave
-            #     self.destination = self.player.pos
-            #     self.notice_volume_meter = 0
+        # if aggro:
+        #     print(f"ROAR! I'm so angry at {key}.")
+        # else:
+        #     print('Okay! I have calmed down!')
 
     def decay_noise_meter(self, dt):
         for key, val in self.noise_meter.items():
@@ -118,7 +102,6 @@ class Enemy(pygame.sprite.Sprite):
             #     f'destination {old_destination} reached by {distance}: next destination point {self.destination}')
 
     def update(self, dt, actions):
-        self.render()
         self.update_noise_meter()
         self.check_noise_meter()
         self.decay_noise_meter(dt)

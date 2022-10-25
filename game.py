@@ -14,6 +14,7 @@ from debug import debug
 class Game():
     def __init__(self, joysticks):
         pygame.init()
+        self.clock = pygame.time.Clock()
         self.GAME_W, self.GAME_H = WIDTH, HEIGHT
         self.SCREEN_WIDTH, self.SCREEN_HEIGHT = WIDTH, HEIGHT
         self.game_canvas = pygame.Surface((self.GAME_W, self.GAME_H))
@@ -28,6 +29,7 @@ class Game():
             'space': False,
             'action1': False,
             'LCTRL': False,
+            'LSHIFT': False,
             'start': False,
             'TAB': False,
             # 'x': False,
@@ -78,7 +80,7 @@ class Game():
 
     def game_loop(self):
         while self.playing:
-            # time.sleep(0.1)
+            self.clock.tick(FPS)
             self.get_dt()
             self.get_events()
             self.fsm.execute()
@@ -106,11 +108,14 @@ class Game():
                     self.actions['space'] = True
                 if event.key == pygame.K_LCTRL:
                     self.actions['LCTRL'] = True
+                if event.key == pygame.K_LSHIFT:
+                    self.actions['LSHIFT'] = True
                 if event.key == pygame.K_RETURN:
                     self.actions['start'] = True
                 if event.key == pygame.K_TAB:
                     self.actions['TAB'] = True
 
+            # TODO: instead get keys pressed for lshift and ctrl
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_a:
                     self.actions['left'] = False
@@ -124,6 +129,8 @@ class Game():
                     self.actions['space'] = False
                 if event.key == pygame.K_LCTRL:
                     self.actions['LCTRL'] = False
+                if event.key == pygame.K_LSHIFT:
+                    self.actions['LSHIFT'] = False
                 if event.key == pygame.K_RETURN:
                     self.actions['start'] = False
                 if event.key == pygame.K_TAB:
@@ -163,7 +170,7 @@ class Game():
         surface.blit(text_surface, text_rect)
 
     def reset_keys(self):
-        for action in ['LCTRL', 'space', 'start', 'TAB']:
+        for action in ['LCTRL', 'LSHIFT', 'space', 'start', 'TAB']:
             self.actions[action] = False
 
 

@@ -104,6 +104,9 @@ class GameWorld(State):
         self.alpha_surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
         self.decay_surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
         self.decay_surf.fill((0, 0, 0, 1))
+        self.footprint_decay_surf = pygame.Surface(
+            (WIDTH, HEIGHT), pygame.SRCALPHA)
+        self.footprint_decay_surf.fill((255, 255, 255, 1))
         self.permanent_surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
 
         # Surface initialization
@@ -172,11 +175,12 @@ class GameWorld(State):
             [self.visible_sprites, self.player_sprite], self.collision_sprites, (250, 250), self.trigger_spawn_footprint, self.trigger_spawn_soundsource)
 
         # Key
-        Key([self.visible_sprites, self.key_sprites], [self.collision_sprites],
-            (200, 80), self.player, id=1)
-        # # Enemy
-        # Enemy([self.visible_sprites], self.collision_sprites, self.alpha_sprites,
-        #       self.alpha_sprites, (30, 80), [(250, 80), (30, 80)], self.player)
+        # Key([self.visible_sprites, self.key_sprites], [self.collision_sprites],
+        # (200, 80), self.player, id=1)
+
+        # Enemy
+        Enemy([self.visible_sprites], self.collision_sprites, self.alpha_sprites, (30, 80), [(1000, 80), (30, 80)],
+              self.player, self.trigger_spawn_footprint, self.trigger_spawn_soundsource)
 
     def suspend(self):
         print('GameWorld suspend')
@@ -207,8 +211,8 @@ class GameWorld(State):
 
     def render(self):
 
-        # self.visible_surf.blit(self.bg_image, (0, 0))
-        self.visible_surf.fill((50, 50, 50))
+        self.visible_surf.blit(self.bg_image, (0, 0))
+        # self.visible_surf.fill((50, 50, 50))
         for sprite in self.visible_sprites:
             self.visible_surf.blit(sprite.image, sprite.rect.topleft)
             # draw outline rect for debugging
@@ -224,12 +228,17 @@ class GameWorld(State):
             self.alpha_surf.blit(
                 sprite.image, sprite.rect.topleft, special_flags=pygame.BLEND_RGBA_SUB)
 
-        # Fade out to black with decay_surf
+        # Fade outs
         self.decay_counter += self.game.dt
         if self.decay_counter >= FADEOUT_DECAY_TIME:
+            # Fade out alpha surf to black with decay_surf
             self.decay_counter = 0
             self.alpha_surf.blit(self.decay_surf, (0, 0),
                                  special_flags=pygame.BLEND_RGBA_ADD)
+            # Fade out footprints
+            # print('fade out footprints')
+            # self.permanent_surf.blit(self.decay_surf, (0, 0),
+            #                          special_flags=pygame.BLEND_RGBA_SUB)
 
         self.display_surface.blit(self.visible_surf, (0, 0))
         self.display_surface.blit(self.alpha_surf, (0, 0))
