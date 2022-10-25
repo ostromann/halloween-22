@@ -143,18 +143,18 @@ class GameWorld(State):
         # Boundary([self.visible_sprites, self.collision_sprites],
         #          (300-WALL_WIDTH, 0), (WALL_WIDTH, 300))
 
-        # # Additional Walls
-        # Boundary([self.visible_sprites, self.collision_sprites],
-        #          (0, 140), (200, WALL_WIDTH))
-        # Boundary([self.visible_sprites, self.collision_sprites],
-        #          (140, 130), (WALL_WIDTH, 60))
-        # Boundary([self.visible_sprites, self.collision_sprites],
-        #          (140, 250), (WALL_WIDTH, 50))
+        # Additional Walls
+        Boundary([self.visible_sprites, self.collision_sprites],
+                 (0, 140), (200, WALL_WIDTH))
+        Boundary([self.visible_sprites, self.collision_sprites],
+                 (140, 130), (WALL_WIDTH, 60))
+        Boundary([self.visible_sprites, self.collision_sprites],
+                 (140, 250), (WALL_WIDTH, 50))
 
-        # # Boundary([self.visible_sprites, self.collision_sprites],
-        # #          (140, 140), (50, WALL_WIDTH))
         # Boundary([self.visible_sprites, self.collision_sprites],
-        #          (250, 140), (50, WALL_WIDTH))
+        #          (140, 140), (50, WALL_WIDTH))
+        Boundary([self.visible_sprites, self.collision_sprites],
+                 (250, 140), (50, WALL_WIDTH))
 
         # # Door
         # Door([self.visible_sprites, self.collision_sprites, self.door_sprites],
@@ -200,6 +200,7 @@ class GameWorld(State):
             self.game.fsm.push('pause')
 
         self.visible_sprites.update(self.game.dt, self.game.actions)
+        self.permanent_sprites.update(self.game.dt, self.game.actions)
         self.alpha_sprites.update(self.game.dt, self.game.actions)
         self.game.reset_keys()
         # self.fsm.update()
@@ -211,9 +212,10 @@ class GameWorld(State):
         for sprite in self.visible_sprites:
             self.visible_surf.blit(sprite.image, sprite.rect.topleft)
             # draw outline rect for debugging
-            pygame.draw.rect(self.visible_surf, (255, 0, 0), sprite.rect, 2)
+            # pygame.draw.rect(self.visible_surf, (255, 0, 0), sprite.rect, 2)
 
         for sprite in self.permanent_sprites:
+            # TODO: Add fade out to this
             blitRotate2(self.permanent_surf, sprite.image,
                         sprite.rect.topleft, sprite.angle)
             # self.permanent_surf.blit(sprite.image, sprite.rect.topleft)
@@ -230,7 +232,7 @@ class GameWorld(State):
                                  special_flags=pygame.BLEND_RGBA_ADD)
 
         self.display_surface.blit(self.visible_surf, (0, 0))
-        # self.display_surface.blit(self.alpha_surf, (0, 0))
+        self.display_surface.blit(self.alpha_surf, (0, 0))
         self.display_surface.blit(self.permanent_surf, (0, 0))
 
         if self.game.dt == 0:

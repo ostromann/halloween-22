@@ -1,6 +1,7 @@
 import pygame
 
 from gameplay.sound import SoundSource
+from settings import *
 
 
 class Footstep(pygame.sprite.Sprite):
@@ -19,17 +20,25 @@ class Footstep(pygame.sprite.Sprite):
 
         self.direction = pygame.math.Vector2(direction)
         self.angle = -self.direction.as_polar()[1] - 90
-        print(self.angle)
         self.offset = pygame.math.Vector2(self.direction.rotate(90))
         self.offset *= -offset_size if self.left else offset_size
 
         self.pos = pygame.math.Vector2(pos + self.offset)
 
         self.image = pygame.transform.scale(pygame.image.load(
-            f'assets/graphics/footprint_{self.origin}.png'), size)
+            f'assets/graphics/footprint_{self.origin}.png').convert_alpha(), size)
+        self.brightness = 255
 
         if not left:
             self.image = pygame.transform.flip(self.image, True, False)
         self.rect = self.image.get_rect(center=self.pos)
         self.sound_source_pos = self.rect.center
-        print('Footstep created!')
+
+    def decay(self, dt):
+        if self.brightness >= 20:
+            self.brightness -= FOOTSTEP_FADEOUT * dt
+        self.image = self.image.convert_alpha()
+        self.image.set_alpha(self.brightness)
+
+    def update(self, dt, actions):
+        self.decay(dt)

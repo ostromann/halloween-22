@@ -74,7 +74,7 @@ class Player(pygame.sprite.Sprite):
 
         if self.distance_travelled >= FOOTSTEP_DISTANCE:
             self.trigger_spawn_footprint(
-                self.pos, self.direction, FOOTSTEP_VOLUME, self.left, 'enemy')
+                self.pos, self.direction, FOOTSTEP_VOLUME, self.left, 'player')
             self.left = not self.left
             self.distance_travelled = 0
 
