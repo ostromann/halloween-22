@@ -24,6 +24,18 @@ import pygame
 #       surface_list.append(image_surf)
 #   return surface_list
 
+# def surf_rotate()
+
+
+def blitRotate2(surf, image, topleft, angle):
+
+    rotated_image = pygame.transform.rotate(image, angle)
+    new_rect = rotated_image.get_rect(
+        center=image.get_rect(topleft=topleft).center)
+
+    surf.blit(rotated_image, new_rect.topleft)
+    # pygame.draw.rect(surf, (255, 0, 0), new_rect, 2)
+
 
 def get_distance_direction_a_to_b(a, b):
     '''
@@ -39,6 +51,17 @@ def get_distance_direction_a_to_b(a, b):
         direction = pygame.math.Vector2()
     return (distance, direction)
 
+
+def key_with_maxval(d):
+    """ a) create a list of the dict's keys and values; 
+        b) return the key with the max value"""
+    v = list(d.values())
+    k = list(d.keys())
+    return k[v.index(max(v))]
+
+
+def filter_dict_by_keys(d, keys):
+    return {k: d[k] for k in keys}
 
 # def get_closest_sprite_of_group(sprite, group):
 #     '''

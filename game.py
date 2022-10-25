@@ -14,8 +14,8 @@ from debug import debug
 class Game():
     def __init__(self, joysticks):
         pygame.init()
-        self.GAME_W, self.GAME_H = 300, 300
-        self.SCREEN_WIDTH, self.SCREEN_HEIGHT = 300, 300
+        self.GAME_W, self.GAME_H = WIDTH, HEIGHT
+        self.SCREEN_WIDTH, self.SCREEN_HEIGHT = WIDTH, HEIGHT
         self.game_canvas = pygame.Surface((self.GAME_W, self.GAME_H))
         self.screen = pygame.display.set_mode(
             (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))

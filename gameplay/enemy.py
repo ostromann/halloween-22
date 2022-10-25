@@ -57,21 +57,21 @@ class Enemy(pygame.sprite.Sprite):
         self.hitbox.centery = round(self.pos.y)
         self.rect.center = self.hitbox.center
 
-        if self.last_footstep:
-            distance, _ = get_distance_direction_a_to_b(
-                self.last_footstep.pos, self.pos)
-            if distance >= ENEMY_FOOTSTEP_DISTANCE:
-                self.spawn_footprint()
-        else:
-            self.spawn_footprint()
+        # if self.last_footstep:
+        #     distance, _ = get_distance_direction_a_to_b(
+        #         self.last_footstep.pos, self.pos)
+        #     if distance >= ENEMY_FOOTSTEP_DISTANCE:
+        #         self.spawn_footprint()
+        # else:
+        #     self.spawn_footprint()
 
-    def spawn_footprint(self):
-        if not self.last_footstep:
-            self.last_footstep = Footstep(
-                [self.alpha_sprites], self.collision_sprites, self.pos, self.direction, volume=ENEMY_FOOTSTEP_VOLUME, left=True, origin_type='enemy')
-        else:
-            self.last_footstep = Footstep([self.alpha_sprites], self.collision_sprites, self.pos,
-                                          self.direction, volume=ENEMY_FOOTSTEP_VOLUME, left=not self.last_footstep.left, origin_type='enemy')
+    # def spawn_footprint(self):
+    #     if not self.last_footstep:
+    #         self.last_footstep = Footstep(
+    #             [self.alpha_sprites], self.collision_sprites, self.pos, self.direction, volume=ENEMY_FOOTSTEP_VOLUME, left=True, origin_type='enemy')
+    #     else:
+    #         self.last_footstep = Footstep([self.alpha_sprites], self.collision_sprites, self.pos,
+    #                                       self.direction, volume=ENEMY_FOOTSTEP_VOLUME, left=not self.last_footstep.left, origin_type='enemy')
 
     def update_noise_meter(self):
         for sprite in self.sound_sprites:

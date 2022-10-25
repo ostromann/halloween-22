@@ -4,6 +4,7 @@ import pygame
 from random import choice, randint
 from debug import debug
 from gameplay.enemy import Enemy
+from gameplay.utils import blitRotate2
 
 from states.state import State, FSM
 from gameplay.camera import YSortCameraGroup
@@ -11,6 +12,7 @@ from gameplay.boundary import Boundary
 from gameplay.sound import SoundSource, Soundbeam
 from gameplay.player import Player
 from gameplay.item import Key, Keyhole, Door
+from gameplay.footstep import Footstep
 
 from settings import *
 
@@ -102,18 +104,20 @@ class GameWorld(State):
         self.alpha_surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
         self.decay_surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
         self.decay_surf.fill((0, 0, 0, 1))
+        self.permanent_surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
 
         # Surface initialization
         self.alpha_surf.fill((0, 0, 0, 255))
 
         self.bg_image = pygame.image.load(os.path.join(
-            'assets', 'graphics', 'background.png'))
+            'assets', 'graphics', 'background_2.png'))
 
         # sprite group setup
         # self.visible_sprites = YSortCameraGroup()
         self.visible_sprites = pygame.sprite.Group()
-        self.player_sprite = pygame.sprite.Group()
         self.alpha_sprites = pygame.sprite.Group()
+        self.permanent_sprites = pygame.sprite.Group()
+        self.player_sprite = pygame.sprite.Group()
         self.collision_sprites = pygame.sprite.Group()
         self.key_sprites = pygame.sprite.Group()
         self.door_sprites = pygame.sprite.Group()
@@ -128,51 +132,51 @@ class GameWorld(State):
         self.fsm.push('prelevel')
 
         # Level set up
-        # OuterWalls
-
-        Boundary([self.visible_sprites, self.collision_sprites],
-                 (0, 0), (300, WALL_WIDTH))
-        Boundary([self.visible_sprites, self.collision_sprites],
-                 (0, 0), (WALL_WIDTH, 300))
-        Boundary([self.visible_sprites, self.collision_sprites],
-                 (0, 300-WALL_WIDTH), (300, WALL_WIDTH))
-        Boundary([self.visible_sprites, self.collision_sprites],
-                 (300-WALL_WIDTH, 0), (WALL_WIDTH, 300))
-
-        # Additional Walls
-        Boundary([self.visible_sprites, self.collision_sprites],
-                 (0, 140), (200, WALL_WIDTH))
-        Boundary([self.visible_sprites, self.collision_sprites],
-                 (140, 130), (WALL_WIDTH, 60))
-        Boundary([self.visible_sprites, self.collision_sprites],
-                 (140, 250), (WALL_WIDTH, 50))
+        # # OuterWalls
 
         # Boundary([self.visible_sprites, self.collision_sprites],
-        #          (140, 140), (50, WALL_WIDTH))
-        Boundary([self.visible_sprites, self.collision_sprites],
-                 (250, 140), (50, WALL_WIDTH))
+        #          (0, 0), (300, WALL_WIDTH))
+        # Boundary([self.visible_sprites, self.collision_sprites],
+        #          (0, 0), (WALL_WIDTH, 300))
+        # Boundary([self.visible_sprites, self.collision_sprites],
+        #          (0, 300-WALL_WIDTH), (300, WALL_WIDTH))
+        # Boundary([self.visible_sprites, self.collision_sprites],
+        #          (300-WALL_WIDTH, 0), (WALL_WIDTH, 300))
 
-        # Door
-        Door([self.visible_sprites, self.collision_sprites, self.door_sprites],
-             (140, 190), (WALL_WIDTH-10, 60), True, id=1)
+        # # Additional Walls
+        # Boundary([self.visible_sprites, self.collision_sprites],
+        #          (0, 140), (200, WALL_WIDTH))
+        # Boundary([self.visible_sprites, self.collision_sprites],
+        #          (140, 130), (WALL_WIDTH, 60))
+        # Boundary([self.visible_sprites, self.collision_sprites],
+        #          (140, 250), (WALL_WIDTH, 50))
 
-        Door([self.visible_sprites, self.collision_sprites, self.door_sprites],
-             (190, 140), (60, WALL_WIDTH-10), False, id=1)
+        # # Boundary([self.visible_sprites, self.collision_sprites],
+        # #          (140, 140), (50, WALL_WIDTH))
+        # Boundary([self.visible_sprites, self.collision_sprites],
+        #          (250, 140), (50, WALL_WIDTH))
 
-        # Keyhole
-        Keyhole([self.visible_sprites], self.key_sprites,
-                self.door_sprites, (170, 230), id=1)
+        # # Door
+        # Door([self.visible_sprites, self.collision_sprites, self.door_sprites],
+        #      (140, 190), (WALL_WIDTH-10, 60), True, id=1)
+
+        # Door([self.visible_sprites, self.collision_sprites, self.door_sprites],
+        #      (190, 140), (60, WALL_WIDTH-10), False, id=1)
+
+        # # Keyhole
+        # Keyhole([self.visible_sprites], self.key_sprites,
+        #         self.door_sprites, (170, 230), id=1)
 
         # Player
         self.player = Player(
-            [self.visible_sprites, self.player_sprite], self.collision_sprites, self.alpha_sprites, (250, 250))
+            [self.visible_sprites, self.player_sprite], self.collision_sprites, (250, 250), self.trigger_spawn_footprint, self.trigger_spawn_soundsource)
 
         # Key
         Key([self.visible_sprites, self.key_sprites], [self.collision_sprites],
             (200, 80), self.player, id=1)
-        # Enemy
-        Enemy([self.visible_sprites], self.collision_sprites, self.alpha_sprites,
-              self.alpha_sprites, (30, 80), [(250, 80), (30, 80)], self.player)
+        # # Enemy
+        # Enemy([self.visible_sprites], self.collision_sprites, self.alpha_sprites,
+        #       self.alpha_sprites, (30, 80), [(250, 80), (30, 80)], self.player)
 
     def suspend(self):
         print('GameWorld suspend')
@@ -194,12 +198,7 @@ class GameWorld(State):
         if self.game.actions['start']:
             print('push pause')
             self.game.fsm.push('pause')
-        # if self.game.actions['LCTRL']:
-        #     print('spawn sound source')
-        #     SoundSource([self.alpha_sprites],
-        #                 self.collision_sprites, (randint(10, 290), randint(10, 290)), 20)
 
-        # print(self.game.dt, self.game.actions)
         self.visible_sprites.update(self.game.dt, self.game.actions)
         self.alpha_sprites.update(self.game.dt, self.game.actions)
         self.game.reset_keys()
@@ -207,9 +206,17 @@ class GameWorld(State):
 
     def render(self):
 
-        self.visible_surf.blit(self.bg_image, (0, 0))
+        # self.visible_surf.blit(self.bg_image, (0, 0))
+        self.visible_surf.fill((50, 50, 50))
         for sprite in self.visible_sprites:
             self.visible_surf.blit(sprite.image, sprite.rect.topleft)
+            # draw outline rect for debugging
+            pygame.draw.rect(self.visible_surf, (255, 0, 0), sprite.rect, 2)
+
+        for sprite in self.permanent_sprites:
+            blitRotate2(self.permanent_surf, sprite.image,
+                        sprite.rect.topleft, sprite.angle)
+            # self.permanent_surf.blit(sprite.image, sprite.rect.topleft)
 
         for sprite in self.alpha_sprites:
             self.alpha_surf.blit(
@@ -223,10 +230,21 @@ class GameWorld(State):
                                  special_flags=pygame.BLEND_RGBA_ADD)
 
         self.display_surface.blit(self.visible_surf, (0, 0))
-        self.display_surface.blit(self.alpha_surf, (0, 0))
+        # self.display_surface.blit(self.alpha_surf, (0, 0))
+        self.display_surface.blit(self.permanent_surf, (0, 0))
 
         if self.game.dt == 0:
             debug('inf')
         else:
             debug(int(1/self.game.dt))
         self.fsm.render()
+
+    def trigger_spawn_footprint(self, pos, direction, volume, left, origin):
+        footstep = Footstep([self.permanent_sprites], pos,
+                            direction, volume, left, origin)
+        self.trigger_spawn_soundsource(
+            footstep.sound_source_pos, volume, 'player')
+
+    def trigger_spawn_soundsource(self, pos, volume, origin):
+        SoundSource([self.alpha_sprites], self.collision_sprites, pos,
+                    volume, origin)

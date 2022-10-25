@@ -8,22 +8,26 @@ from settings import *
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, groups, collision_sprites, alpha_sprites, pos):
+    def __init__(self, groups, collision_sprites, pos, trigger_spawn_footprint, trigger_spawn_soundsource):
         super().__init__(groups)
 
         # movement
         # topleft because this pos comes from the 64 64 gridworld in tiled
-        self.image = pygame.Surface((20, 20))
+        self.image = pygame.Surface((25, 25))
         self.rect = self.image.get_rect(topleft=pos)
         self.pos = pygame.math.Vector2(self.rect.center)
         self.direction = pygame.math.Vector2()
         self.hitbox = self.rect
         self.hitbox.center = self.pos
         self.collision_sprites = collision_sprites
-        self.alpha_sprites = alpha_sprites
 
         self.speed = 1
-        self.last_footstep = None
+        self.distance_travelled = 0
+
+        # Interaction functions
+        self.left = True  # Player starts on left foot
+        self.trigger_spawn_footprint = trigger_spawn_footprint
+        self.trigger_spawn_soundsource = trigger_spawn_soundsource
 
         # Timer
         self.stomping = False
@@ -31,8 +35,8 @@ class Player(pygame.sprite.Sprite):
         self.stomp_cooldown = 300
 
     def stomp(self):
-        SoundSource([self.alpha_sprites], self.collision_sprites,
-                    self.pos, SOUNDBEAM_MAX_LOUDNESS)
+        self.trigger_spawn_soundsource(
+            self.pos, SOUNDBEAM_MAX_LOUDNESS, 'player')
 
     def cooldowns(self):
         current_time = pygame.time.get_ticks()
@@ -55,14 +59,6 @@ class Player(pygame.sprite.Sprite):
                 self.stomping = True
                 self.stomp_time = pygame.time.get_ticks()
 
-    def spawn_footprint(self):
-        if not self.last_footstep:
-            self.last_footstep = Footstep(
-                [self.alpha_sprites], self.collision_sprites, self.pos, self.direction, volume=FOOTSTEP_VOLUME, left=True)
-        else:
-            self.last_footstep = Footstep([self.alpha_sprites], self.collision_sprites, self.pos,
-                                          self.direction, volume=FOOTSTEP_VOLUME, left=not self.last_footstep.left)
-
     def move(self, dt):
         self.pos += self.direction * self.speed * dt * 60
 
@@ -73,13 +69,14 @@ class Player(pygame.sprite.Sprite):
 
         self.rect.center = self.hitbox.center
 
-        if self.last_footstep:
-            distance, _ = get_distance_direction_a_to_b(
-                self.last_footstep.pos, self.pos)
-            if distance >= FOOTSTEP_DISTANCE:
-                self.spawn_footprint()
-        else:
-            self.spawn_footprint()
+        self.distance_travelled += (self.direction *
+                                    self.speed * dt * 60).magnitude()
+
+        if self.distance_travelled >= FOOTSTEP_DISTANCE:
+            self.trigger_spawn_footprint(
+                self.pos, self.direction, FOOTSTEP_VOLUME, self.left, 'enemy')
+            self.left = not self.left
+            self.distance_travelled = 0
 
     def collision(self, direction):
         if direction == 'horizontal':
