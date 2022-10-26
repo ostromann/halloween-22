@@ -3,102 +3,77 @@ import os
 import pygame
 from random import choice, randint
 from debug import debug
-from gameplay.enemy import Enemy
-from gameplay.utils import blitRotate2
+from pytmx.util_pygame import load_pygame
 
+from gameplay.enemy import Enemy
+from gameplay.tile import Tile
 from states.state import State, FSM
 from gameplay.camera import YSortCameraGroup
 from gameplay.boundary import Boundary
 from gameplay.sound import SoundSource, Soundbeam
 from gameplay.player import Player
-from gameplay.item import Key, Keyhole, Door
+from gameplay.objects import Key, Keyhole, Door
 from gameplay.footstep import Footstep
 
+from gameplay.utils import blitRotate2
 from settings import *
-
-
-class PreLevel(State):
-    def __init__(self, game, blocks_update=None, blocks_render=None):
-        super().__init__(game, blocks_update, blocks_render)
-
-    def startup(self):
-        print('PreLevel startup')
-        Boundary((50, 50), [self.game.visible_sprites,
-                 self.game.collision_sprites])
-        # Call when state is pushed to the stack
-        self.game.fsm.switch('level')
-        pass
-
-    def cleanup(self):
-        print('PreLevel cleanup')
-        # Call when state is pop from the stack
-        pass
-
-    def suspend(self):
-        print('PreLevel suspend')
-        # Call when a new state is pushed on top of the current one
-        pass
-
-    def wakeup(self):
-        print('PreLevel wakeup')
-        # Call when the state ontop of this one is popped
-        pass
-
-    def update(self):
-        pass
-
-    def render(self):
-        pass
-
-
-class Level(State):
-    def __init__(self, game, blocks_update=None, blocks_render=None):
-        super().__init__(game, blocks_update, blocks_render)
-
-    def startup(self):
-        print('Level startup')
-        # Call when state is pushed to the stack
-        pass
-
-    def cleanup(self):
-        print('Level cleanup')
-        # Call when state is pop from the stack
-        pass
-
-    def suspend(self):
-        print('Level suspend')
-        # Call when a new state is pushed on top of the current one
-        pass
-
-    def wakeup(self):
-        print('Level wakeup')
-        # Call when the state ontop of this one is popped
-        pass
-
-    def update(self):
-        dt = self.game.game.dt
-        actions = self.game.game.actions
-        print(actions)
-
-        if actions['left']:
-            print('spawn sound source')
-            SoundSource([self.game.visible_sprites],
-                        self.game.collision_sprites, (100, 100), 20)
-
-        self.game.visible_sprites.update(dt, actions)
-
-    def render(self):
-        self.game.visible_sprites.custom_draw()
 
 
 class GameWorld(State):
     def __init__(self, game, blocks_update=None, blocks_render=None):
         super().__init__(game, blocks_update, blocks_render)
-        self.display_surface = pygame.display.get_surface()
+        # self.display_surface = pygame.display.get_surface()
+        self.display_surface = self.game.game_canvas
+        print(self.display_surface)
+
+    def load_level(self, path):
+        tmx_data = load_pygame(path)
+
+        # Game logic layers first!
+        layer = tmx_data.get_layer_by_name('Game_Logic')
+        for obj in layer:
+            if obj.name == 'player_spawn':
+                self.player = Player(
+                    [self.visible_sprites, self.player_sprite], self.collision_sprites, (obj.x, obj.y), self.trigger_spawn_footprint, self.trigger_spawn_soundsource)
+            if obj.name == 'enemy_spawn':
+                Enemy([self.visible_sprites], self.collision_sprites, (obj.x, obj.y), [
+                ], self.player, self.trigger_spawn_footprint, self.trigger_spawn_soundsource)
+
+        for layer in tmx_data.layers:
+            if layer.name == 'Boundary':
+                for x, y, surf in layer.tiles():
+                    Tile((x*TILESIZE, y*TILESIZE), surf, [
+                         self.visible_sprites, self.collision_sprites])
+
+            if layer.name == 'Sound_Sources':
+                for obj in layer:
+                    print(f'Soundsource at {obj.x, obj.y}')
+            if layer.name == 'Grating_Objects':
+                for obj in layer:
+                    for i in range(0, 4):
+                        pos = (obj.x + i*4/20, obj.y+TILESIZE/2-3)
+                        tmp_surf = pygame.Surface((6, 6))
+                        Tile(pos, tmp_surf, [
+                             self.visible_sprites, self.collision_sprites])
+            if layer.name == 'Sound_Sources':
+                pass
+            if layer.name == 'Objects':
+                for obj in layer:
+                    if obj.name.split('_')[1] == 'door':
+                        color, type, id, closed = obj.name.split('_')
+                        print(obj.name, closed)
+                        Door([self.visible_sprites, self.door_sprites], self.visible_sprites, self.collision_sprites,
+                             (obj.x, obj.y), (obj.width, obj.height), closed, color=color)
+                    elif obj.name.split('_')[1] == 'key':
+                        color, type, id = obj.name.split('_')
+                        Key([self.visible_sprites, self.key_sprites], [
+                            self.collision_sprites], (obj.x, obj.y), self.player, color=color)
+                    elif obj.name.split('_')[1] == 'keyhole':
+                        color, type, id = obj.name.split('_')
+                        Keyhole([self.visible_sprites], self.key_sprites,
+                                self.door_sprites, (obj.x, obj.y), color=color)
 
     def startup(self):
-        print('GameWorld startup')
-
         # Surface set up
         self.visible_surf = pygame.Surface((WIDTH, HEIGHT))
         self.alpha_surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
@@ -111,9 +86,6 @@ class GameWorld(State):
 
         # Surface initialization
         self.alpha_surf.fill((0, 0, 0, 255))
-
-        self.bg_image = pygame.image.load(os.path.join(
-            'assets', 'graphics', 'background_2.png'))
 
         # sprite group setup
         # self.visible_sprites = YSortCameraGroup()
@@ -129,58 +101,14 @@ class GameWorld(State):
         # self.collectible_sprites = pygame.sprite.Group()
 
         # FSM for run-through
-        self.fsm = FSM()
-        self.fsm.register('prelevel', PreLevel(self))
-        self.fsm.register('level', Level(self))
-        self.fsm.push('prelevel')
+        # self.fsm = FSM()
+        # self.fsm.register('prelevel', PreLevel(self))
+        # self.fsm.register('level', Level(self))
+        # self.fsm.push('prelevel')
 
         # Level set up
-        # # OuterWalls
-
-        # Boundary([self.visible_sprites, self.collision_sprites],
-        #          (0, 0), (300, WALL_WIDTH))
-        # Boundary([self.visible_sprites, self.collision_sprites],
-        #          (0, 0), (WALL_WIDTH, 300))
-        # Boundary([self.visible_sprites, self.collision_sprites],
-        #          (0, 300-WALL_WIDTH), (300, WALL_WIDTH))
-        # Boundary([self.visible_sprites, self.collision_sprites],
-        #          (300-WALL_WIDTH, 0), (WALL_WIDTH, 300))
-
-        # Additional Walls
-        Boundary([self.visible_sprites, self.collision_sprites],
-                 (0, 140), (200, WALL_WIDTH))
-        Boundary([self.visible_sprites, self.collision_sprites],
-                 (140, 130), (WALL_WIDTH, 60))
-        Boundary([self.visible_sprites, self.collision_sprites],
-                 (140, 250), (WALL_WIDTH, 50))
-
-        # Boundary([self.visible_sprites, self.collision_sprites],
-        #          (140, 140), (50, WALL_WIDTH))
-        Boundary([self.visible_sprites, self.collision_sprites],
-                 (250, 140), (50, WALL_WIDTH))
-
-        # # Door
-        # Door([self.visible_sprites, self.collision_sprites, self.door_sprites],
-        #      (140, 190), (WALL_WIDTH-10, 60), True, id=1)
-
-        # Door([self.visible_sprites, self.collision_sprites, self.door_sprites],
-        #      (190, 140), (60, WALL_WIDTH-10), False, id=1)
-
-        # # Keyhole
-        # Keyhole([self.visible_sprites], self.key_sprites,
-        #         self.door_sprites, (170, 230), id=1)
-
-        # Player
-        self.player = Player(
-            [self.visible_sprites, self.player_sprite], self.collision_sprites, (250, 250), self.trigger_spawn_footprint, self.trigger_spawn_soundsource)
-
-        # Key
-        # Key([self.visible_sprites, self.key_sprites], [self.collision_sprites],
-        # (200, 80), self.player, id=1)
-
-        # Enemy
-        Enemy([self.visible_sprites], self.collision_sprites, self.alpha_sprites, (30, 80), [(1000, 80), (30, 80)],
-              self.player, self.trigger_spawn_footprint, self.trigger_spawn_soundsource)
+        tmx_data = self.load_level(os.path.join(
+            'assets', 'levels', 'template.tmx'))
 
     def suspend(self):
         print('GameWorld suspend')
@@ -211,12 +139,12 @@ class GameWorld(State):
 
     def render(self):
 
-        self.visible_surf.blit(self.bg_image, (0, 0))
-        # self.visible_surf.fill((50, 50, 50))
+        self.visible_surf.fill('white')
         for sprite in self.visible_sprites:
             self.visible_surf.blit(sprite.image, sprite.rect.topleft)
             # draw outline rect for debugging
-            # pygame.draw.rect(self.visible_surf, (255, 0, 0), sprite.rect, 2)
+            pygame.draw.rect(self.visible_surf, (133, 50, 0), sprite.rect, 1)
+            pygame.draw.rect(self.visible_surf, (255, 0, 0), sprite.hitbox, 1)
 
         for sprite in self.permanent_sprites:
             # TODO: Add fade out to this
@@ -244,11 +172,13 @@ class GameWorld(State):
         self.display_surface.blit(self.alpha_surf, (0, 0))
         self.display_surface.blit(self.permanent_surf, (0, 0))
 
+        # debug(
+        #     f'{self.player.status}: {self.player.direction}({self.player.last_direction})')
         if self.game.dt == 0:
-            debug('inf')
+            debug('inf', 680, 440)
         else:
-            debug(int(1/self.game.dt))
-        self.fsm.render()
+            debug(int(1/self.game.dt), 680, 440)
+        # self.fsm.render()
 
     def trigger_spawn_footprint(self, pos, direction, volume, left, origin):
         footstep = Footstep([self.permanent_sprites], pos,

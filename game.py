@@ -4,7 +4,6 @@ import pygame
 import json
 from states.game_world import GameWorld
 
-from joysticks import initialize_joysticks
 from settings import *
 from states.menues import MainMenu, PauseMenu
 from states.state import FSM
@@ -12,12 +11,13 @@ from debug import debug
 
 
 class Game():
-    def __init__(self, joysticks):
+    def __init__(self):
         pygame.init()
         self.clock = pygame.time.Clock()
         self.GAME_W, self.GAME_H = WIDTH, HEIGHT
-        self.SCREEN_WIDTH, self.SCREEN_HEIGHT = WIDTH, HEIGHT
-        self.game_canvas = pygame.Surface((self.GAME_W, self.GAME_H))
+        self.SCREEN_WIDTH, self.SCREEN_HEIGHT = WIDTH*2, HEIGHT*2
+        self.game_canvas = pygame.Surface(
+            (self.GAME_W, self.GAME_H), pygame.SRCALPHA)
         self.screen = pygame.display.set_mode(
             (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.running, self.playing = True, True
@@ -32,16 +32,7 @@ class Game():
             'LSHIFT': False,
             'start': False,
             'TAB': False,
-            # 'x': False,
-            # 'square': False,
-            # 'circle': False,
-            # 'triangle': False
         }
-        self.joysticks = joysticks
-        if len(self.joysticks) > 0:
-            self.joystick_detected = True
-            self.initialize_joysticks()
-
         self.dt, self.prev_time, self.cumulative_dt = 0, 0, 0
 
         self.fsm = FSM()
@@ -52,40 +43,13 @@ class Game():
         self.fsm.push('main_menu')
         self.load_assets()
 
-    def initialize_joysticks(self):
-        print('initializing joysticks:', self.joysticks)
-        self.joysticks_dict = {}
-        for i, joystick in enumerate(self.joysticks):
-            joystick_dict = {}
-            joystick_dict = {
-                'name': joystick.get_name(),
-                'analog_keys': {0: 0, 1: 0, 2: 0, 3: 0, 4: -1, 5: -1},
-                'button_keys': self.get_joystick_button_keys(joystick.get_name()),
-            }
-            self.joysticks_dict[i] = joystick_dict
-        print(self.joysticks_dict)
-
-        # TODO: Handle multiple gamepads others than PS4 Controller
-        self.joystick = self.joysticks_dict[0]
-        self.button_keys = self.joystick['button_keys']
-        self.analog_keys = self.joystick['analog_keys']
-
-    def get_joystick_button_keys(self, name):
-        if name == 'PS4 Controller':
-            with open(os.path.join("ps4_keys.json"), 'r+') as file:
-                button_keys = json.load(file)
-        else:
-            button_keys = {}
-        return button_keys
-
     def game_loop(self):
         while self.playing:
             self.clock.tick(FPS)
             self.get_dt()
             self.get_events()
-            self.fsm.execute()
-            # self.update()
-            # self.render()
+            self.fsm.update()
+            self.render()
 
     def get_events(self):
         for event in pygame.event.get():
@@ -150,13 +114,12 @@ class Game():
         self.state_stack[-1].update(self.dt, self.actions)
 
     def render(self):
-        self.state_stack[-1].render()
-        # Render current state to the screen
-        # self.screen.blit(pygame.transform.scale(self.game_canvas,(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)), (0,0))
-        if self.dt == 0:
-            debug('inf')
-        else:
-            debug(int(1/self.dt))
+        self.fsm.render()
+        # self.state_stack[-1].render()
+        # TODO: Scaling the final screen
+        self.screen.blit(pygame.transform.scale(
+            self.game_canvas, (self.SCREEN_WIDTH, self.SCREEN_HEIGHT)), (0, 0))
+        pygame.display.flip()
 
     def get_dt(self):
         now = time.time()
@@ -175,7 +138,6 @@ class Game():
 
 
 if __name__ == "__main__":
-    joysticks = initialize_joysticks()
-    g = Game(joysticks)
+    g = Game()
     while g.running:
         g.game_loop()

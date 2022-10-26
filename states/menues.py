@@ -25,7 +25,7 @@ class MainMenu(State):
 
     def update(self):
         if self.game.actions['start']:
-            self.game.fsm.push('run-through')
+            self.game.fsm.switch('run-through')
         self.game.reset_keys()
 
     def render(self):
@@ -62,16 +62,8 @@ class PauseMenu(State):
         if self.game.actions['start']:
             self.game.fsm.pop()
         self.game.reset_keys()
-        # new_state.enter_state()
-        # self.update_cursor(actions)
-        # if actions["action1"]:
-        #     self.transition_state()
-        # if actions["action2"]:
-        #     self.exit_state()
-        # self.game.reset_keys()
 
     def render(self):
-        # self.prev_state.render()
         self.menu_surf.fill((255, 255, 255))
         self.game.draw_text(self.menu_surf, "Menu", (0, 0, 0), self.menu_surf.get_width(
         ) // 2, self.menu_surf.get_height() // 2)

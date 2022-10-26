@@ -39,19 +39,6 @@ class Soundbeam(pygame.sprite.Sprite):
         # self.rect = self.orig_rect.inflate(
         #     round(self.size_gain), round(self.size_gain))
 
-    # def dissolve(self):
-    #     if self.size_gain >= 2:
-    #         # spawn 4 new soundbeams, kill itself
-    #         for i in range(2):
-    #             for j in range(2):
-    #                 x = self.rect.topleft[0] + self.rect.width / 2 * i
-    #                 y = self.rect.topleft[1] + self.rect.height / 2 * i
-
-    #                 pos = pygame.math.Vector2(x, y)
-    #                 Soundbeam(self.groups(), self.collision_sprites,
-    #                           pos, self.direction, self.volume)
-    #         self.kill()
-
     def decay(self, dt):
         self.attenuate(dt)
         self.propagate(dt)
@@ -70,31 +57,31 @@ class Soundbeam(pygame.sprite.Sprite):
         self.collision('vertical')
 
     def collision(self, direction):
-        if direction == 'horizontal':
-            for sprite in self.collision_sprites:
-                if sprite.rect.colliderect(self.rect):
-                    if self.direction.x > 0:    # moving right
-                        self.pos.x = sprite.rect.left - self.rect.width / 2
-                        self.direction.x *= -1  # bouncing off
-                        self.direction.y += random() * SOUNDBEAM_DIFFRACTION_FACTOR * \
-                            choice([-1, 1])
-                    elif self.direction.x < 0:    # moving left
-                        self.pos.x = sprite.rect.right + self.rect.width / 2
-                        self.direction.x *= -1  # bouncing off
-                        self.direction.y += random() * SOUNDBEAM_DIFFRACTION_FACTOR * \
-                            choice([-1, 1])
-                    self.rect.centerx = round(self.pos.x)
+        for sprite in self.collision_sprites:
+            if sprite.hitbox.colliderect(self.rect):
+                if self.direction.x > 0:    # moving right
+                    # self.pos.x = sprite.rect.left - self.rect.width / 2
+                    self.pos.x -= self.rect.width
+                    self.direction.x *= -1  # bouncing off
+                    # self.direction.y += random() * SOUNDBEAM_DIFFRACTION_FACTOR * \
+                    #     choice([-1, 1])
+                elif self.direction.x < 0:    # moving left
+                    # self.pos.x = sprite.rect.right + self.rect.width / 2
+                    self.pos.x += self.rect.width
+                    self.direction.x *= -1  # bouncing off
+                    # self.direction.y += random() * SOUNDBEAM_DIFFRACTION_FACTOR * \
+                    #     choice([-1, 1])
+                self.rect.centerx = round(self.pos.x)
 
-        if direction == 'vertical':
-            for sprite in self.collision_sprites:
-                if sprite.rect.colliderect(self.rect):
-                    if self.direction.y > 0:    # moving down
-                        self.pos.y = sprite.rect.top - self.rect.height / 2
-                        self.direction.y *= -1  # bouncing off
-                    elif self.direction.y < 0:    # moving up
-                        self.pos.y = sprite.rect.bottom + self.rect.height / 2
-                        self.direction.y *= -1  # bouncing off
-                    self.rect.centery = round(self.pos.y)
+                if self.direction.y > 0:    # moving down
+                    # self.pos.y = sprite.rect.top - self.rect.height / 2
+                    self.pos.y -= self.rect.height
+                    self.direction.y *= -1  # bouncing off
+                elif self.direction.y < 0:    # moving up
+                    # self.pos.y = sprite.rect.bottom + self.rect.height / 2
+                    self.pos.y += self.rect.height
+                    self.direction.y *= -1  # bouncing off
+                self.rect.centery = round(self.pos.y)
 
     def animate(self, dt):
         self.surf = pygame.Surface(self.rect.size, pygame.SRCALPHA)

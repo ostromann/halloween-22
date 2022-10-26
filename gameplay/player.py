@@ -18,6 +18,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
         self.pos = pygame.math.Vector2(self.rect.center)
         self.direction = pygame.math.Vector2()
+        self.last_direction = pygame.math.Vector2(self.direction)
         self.hitbox = self.rect
         self.hitbox.center = self.pos
         self.collision_sprites = collision_sprites
@@ -50,11 +51,13 @@ class Player(pygame.sprite.Sprite):
     def input(self, actions):
         # Movement
         self.status = 'idle'
+        self.direction = pygame.math.Vector2(self.last_direction)
         self.direction.x = actions['right'] - actions['left']
         self.direction.y = actions['down'] - actions['up']
         if self.direction.magnitude() != 0:
             self.status = 'walk'
             self.direction = self.direction.normalize()
+            self.last_direction = pygame.math.Vector2(self.direction)
 
         if actions['LCTRL']:
             self.status = 'sneak'
@@ -67,7 +70,7 @@ class Player(pygame.sprite.Sprite):
                 self.stomp()
                 self.stomping = True
                 self.stomp_time = pygame.time.get_ticks()
-        print(self.status)
+        # print(self.status)
 
     def move(self, dt):
         self.pos += self.direction * \
@@ -87,7 +90,7 @@ class Player(pygame.sprite.Sprite):
             pos_offset = self.direction * 5
 
             self.trigger_spawn_footprint(
-                self.pos+pos_offset, self.direction, self.movement_stats[self.status]['footstep_volume'], self.left, 'player')
+                self.pos+pos_offset, self.last_direction, self.movement_stats[self.status]['footstep_volume'], self.left, 'player')
             self.left = not self.left
             self.distance_travelled = 0
 

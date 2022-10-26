@@ -11,7 +11,7 @@ class Enemy(pygame.sprite.Sprite):
         # general setup
         super().__init__(groups)
 
-        self.image = pygame.Surface((40, 40), pygame.SRCALPHA)
+        self.image = pygame.Surface((38, 38), pygame.SRCALPHA)
         self.image.fill((255, 0, 0, 0))
         self.rect = self.image.get_rect(topleft=pos)
         self.pos = pygame.math.Vector2(self.rect.center)

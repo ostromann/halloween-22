@@ -48,34 +48,16 @@ class FSM():
 
     def render(self):
         self.render_states()
-        pygame.display.flip()
 
     def execute(self):
         self.update()
         self.render()
 
     def update_states(self):
-        # TODO: Fix this.
-        # First go backwards through the stack until there is a state that is blocking
-        # Then go forwards starting from the blocking state to update all remaining states
-        # update_lvl = len(self.state_stack) - 1
-        # for lvl, state in enumerate(reversed(self.state_stack)):
-        #     if state.blocks_update:
-        #         print(f'Update {state}, {state.blocks_update}, {update_lvl}')
-        #         update_lvl = len(self.state_stack) - lvl
-        #         break
-        # for state in self.state_stack[update_lvl:]:
-        #     state.update()
         self.state_stack[-1].update()
 
     def render_states(self):
-        # render_lvl = len(self.state_stack) - 1
-        # for lvl, state in enumerate(reversed(self.state_stack)):
-        #     if state.blocks_render:
-        #         render_lvl = len(self.state_stack)
-        #         break
         for state in self.state_stack:
-            # print(f'Render {state}, {state.blocks_render},{render_lvl}')
             state.render()
 
 
