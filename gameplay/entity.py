@@ -4,12 +4,11 @@ from settings import *
 
 
 class Entity(pygame.sprite.Sprite):
-    def __init__(self, groups, bouncy=False):
+    def __init__(self, groups):
         super().__init__(groups)
         self.frame_index = 0
         self.animation_speed = 0.15
         self.direction = pygame.math.Vector2()
-        self.bouncy = bouncy
 
     def move(self, dt, speed):
         self.pos += self.direction * speed * dt * 60

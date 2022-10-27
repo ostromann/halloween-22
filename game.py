@@ -5,7 +5,7 @@ import json
 from states.game_world import GameWorld
 
 from settings import *
-from states.menues import MainMenu, PauseMenu
+from states.menues import MainMenu, PauseMenu, DeathScreen
 from states.state import FSM
 from debug import debug
 
@@ -22,26 +22,37 @@ class Game():
             (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.running, self.playing = True, True
         self.actions = {
-            'left': False,
-            'right': False,
-            'up': False,
-            'down': False,
-            'space': False,
-            'action1': False,
+            'w': False,
+            'a': False,
+            's': False,
+            'd': False,
+            'q': False,
+            'e': False,
+            'SPACE': False,
             'LCTRL': False,
             'LSHIFT': False,
-            'start': False,
+            'ENTER': False,
             'TAB': False,
         }
         self.dt, self.prev_time, self.cumulative_dt = 0, 0, 0
 
+        # level index
+        self.level = 3
+
+        # State machine set up
         self.fsm = FSM()
         self.fsm.register('main_menu', MainMenu(self))
         self.fsm.register('run-through', GameWorld(self,
                           blocks_render=True, blocks_update=True))
         self.fsm.register('pause', PauseMenu(self, blocks_update=True))
+        self.fsm.register('death', DeathScreen(self, blocks_update=True))
         self.fsm.push('main_menu')
         self.load_assets()
+
+        # sound
+        main_sound = pygame.mixer.Sound('assets/audio/music/main.ogg')
+        main_sound.set_volume(0)
+        main_sound.play(loops=-1)
 
     def game_loop(self):
         while self.playing:
@@ -56,41 +67,42 @@ class Game():
             if event.type == pygame.QUIT:
                 self.playing = False
                 self.running = False
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.playing = False
                     self.running = False
                 if event.key == pygame.K_a:
-                    self.actions['left'] = True
+                    self.actions['a'] = True
                 if event.key == pygame.K_d:
-                    self.actions['right'] = True
+                    self.actions['d'] = True
                 if event.key == pygame.K_w:
-                    self.actions['up'] = True
+                    self.actions['w'] = True
                 if event.key == pygame.K_s:
-                    self.actions['down'] = True
+                    self.actions['s'] = True
                 if event.key == pygame.K_SPACE:
-                    self.actions['space'] = True
+                    self.actions['SPACE'] = True
                 if event.key == pygame.K_LCTRL:
                     self.actions['LCTRL'] = True
                 if event.key == pygame.K_LSHIFT:
                     self.actions['LSHIFT'] = True
                 if event.key == pygame.K_RETURN:
-                    self.actions['start'] = True
+                    self.actions['ENTER'] = True
                 if event.key == pygame.K_TAB:
                     self.actions['TAB'] = True
 
             # TODO: instead get keys pressed for lshift and ctrl
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_a:
-                    self.actions['left'] = False
+                    self.actions['a'] = False
                 if event.key == pygame.K_d:
-                    self.actions['right'] = False
+                    self.actions['d'] = False
                 if event.key == pygame.K_w:
-                    self.actions['up'] = False
+                    self.actions['w'] = False
                 if event.key == pygame.K_s:
-                    self.actions['down'] = False
+                    self.actions['s'] = False
                 if event.key == pygame.K_SPACE:
-                    self.actions['space'] = False
+                    self.actions['SPACE'] = False
                 if event.key == pygame.K_LCTRL:
                     self.actions['LCTRL'] = False
                 if event.key == pygame.K_LSHIFT:
@@ -106,9 +118,9 @@ class Game():
         # self.sprite_dir = os.path.join(self.assets_dir, "sprites")
         self.font_dir = os.path.join(self.assets_dir, "fonts")
         self.title_font = pygame.font.Font(os.path.join(
-            self.font_dir, "BLACKOUT.TTF"), 60)
+            self.font_dir, "BLACKOUT.TTF"), 140)
         self.main_font = pygame.font.Font(os.path.join(
-            self.font_dir, "BLACKOUT.TTF"), 12)
+            self.font_dir, "Oswald-Medium.ttf"), 30)
 
     def update(self):
         self.state_stack[-1].update(self.dt, self.actions)
@@ -126,14 +138,19 @@ class Game():
         self.dt = now - self.prev_time
         self.prev_time = now
 
-    def draw_text(self, surface, text, color, x, y):
-        text_surface = self.title_font.render(text, True, color)
+    def draw_text(self, surface, text, font_type, color, x, y):
+
+        if font_type == 'title':
+            font = self.title_font
+        elif font_type == 'main':
+            font = self.main_font
+        text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect()
         text_rect.center = (x, y)
         surface.blit(text_surface, text_rect)
 
     def reset_keys(self):
-        for action in ['LCTRL', 'LSHIFT', 'space', 'start', 'TAB']:
+        for action in ['SPACE', 'ENTER', 'TAB']:
             self.actions[action] = False
 
 

@@ -24,3 +24,14 @@ class ObjectTile(pygame.sprite.Sprite):
             self.rect = self.image.get_rect(topleft=(obj.x, obj.y))
         else:
             raise ValueError("'ObjTile not of name 'Rectangle'")
+
+
+class LevelGoal(Tile):
+    '''
+    LevelGoal Tile
+    '''
+
+    def __init__(self, obj, groups):
+        surf = pygame.Surface((obj.width, obj.height), pygame.SRCALPHA)
+        surf.fill((255, 255, 255, 255))
+        super().__init__((obj.x, obj.y), surf, groups)

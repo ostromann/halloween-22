@@ -1,17 +1,266 @@
 import pygame
+from random import randint
 
 from gameplay.footstep import Footstep
 from gameplay.utils import *
+from gameplay.entity_fsm import EntityFSM, State, TimedState
 from settings import *
 
 
+# idle, walking, curious, roar, AttackState
+
+class EnemyState(State):
+    def __init__(self, sprite):
+        super().__init__(sprite)
+
+    def check_noise_thresholds(self):
+        sound_source = self.sprite.get_loudest_source()
+
+        if sound_source:
+            if sound_source['volume'] >= enemy_data['attack_noise_threshold']:
+                return 'attack'
+            if sound_source['volume'] >= enemy_data['curious_noise_threshold']:
+                return 'curious'
+
+
+class EnemyTimedState(TimedState):
+    def __init__(self, sprite, duration):
+        super().__init__(sprite, duration)
+
+    def check_noise_thresholds(self):
+        sound_source = self.sprite.get_loudest_source()
+        if sound_source:
+            if sound_source['volume'] >= enemy_data['attack_noise_threshold']:
+                return 'attack'
+            if sound_source['volume'] >= enemy_data['curious_noise_threshold']:
+                return 'curious'
+        return ''
+
+
+class DefaultState(EnemyState):
+    def update(self, dt, actions):
+        self.sprite.entity_fsm.register('idle', IdleState(self.sprite, randint(
+            *enemy_data['idle_duration_range'])))
+        self.sprite.entity_fsm.push('idle')
+
+    def wakeup(self):
+        self.sprite.entity_fsm.register('idle', IdleState(self.sprite, randint(
+            *enemy_data['idle_duration_range'])))
+        self.sprite.entity_fsm.push('idle')
+
+
+class IdleState(EnemyTimedState):
+    def startup(self):
+        if ENEMY_DEBUG:
+            print(f'idle startup, duration: {self.duration}')
+        self.start_time = pygame.time.get_ticks()
+        self.sprite.target_pos = self.sprite.pos
+        self.sprite.movement = enemy_data['movement']['walk']
+
+        self.make_noise = not randint(0, 5)
+        if self.make_noise:
+            self.sprite.make_noise('enemy_low_call')
+
+    def update(self, dt, actions):
+        self.check_expiration()
+
+        if self.check_noise_thresholds() == 'curious':
+            self.sprite.entity_fsm.register(
+                'curious', CuriousState(self.sprite))
+            self.sprite.entity_fsm.switch('curious')
+        elif self.check_noise_thresholds() == 'attack':
+            self.sprite.entity_fsm.register('attack', AttackState(self.sprite))
+            self.sprite.entity_fsm.switch('attack')
+
+        if self.done:
+            self.sprite.entity_fsm.register('walk', WalkState(self.sprite))
+            self.sprite.entity_fsm.switch('walk')
+
+
+class WalkState(EnemyState):
+    def startup(self):
+        self.sprite.target_pos = self.sprite.get_next_waypoint()
+        self.sprite.movement = enemy_data['movement']['walk']
+        if ENEMY_DEBUG:
+            print(f'walk to {self.sprite.target_pos}')
+
+    def cleanup(self):
+        # spawn a last footrpint
+        self.sprite.spawn_footprint()
+
+    def update(self, dt, actions):
+        self.check_done()
+
+        if self.check_noise_thresholds() == 'curious':
+            self.sprite.entity_fsm.register(
+                'curious', CuriousState(self.sprite))
+            self.sprite.entity_fsm.switch('curious')
+        elif self.check_noise_thresholds() == 'attack':
+            self.sprite.entity_fsm.register('attack', AttackState(self.sprite))
+            self.sprite.entity_fsm.switch('attack')
+
+        if self.done:
+            self.done = False
+            self.sprite.entity_fsm.register(
+                'idle', IdleState(self.sprite, randint(
+                    *enemy_data['idle_duration_range'])))
+            self.sprite.entity_fsm.switch('idle')
+
+    def check_done(self):
+        distance, _ = get_distance_direction_a_to_b(
+            self.sprite.pos, self.sprite.target_pos)
+
+        if distance < enemy_data['waypoint_radius']:
+            self.done = True
+
+
+class CuriousRealizationState(EnemyTimedState):
+    def startup(self):
+        if ENEMY_DEBUG:
+            print('realization startup')
+        self.start_time = pygame.time.get_ticks()
+        self.sprite.movement = enemy_data['movement']['idle']
+        self.sprite.target_pos = self.sprite.pos
+
+    def update(self, dt, actions):
+        self.check_expiration()
+        if ENEMY_DEBUG:
+            print('What was that?!?!?!')
+            print(self.time_remaining)
+
+        if self.check_noise_thresholds() == 'attack':
+            self.sprite.entity_fsm.register('attack', AttackState(self.sprite))
+            self.sprite.entity_fsm.switch('attack')
+
+        if self.done:
+            # self.done = False
+            self.sprite.entity_fsm.pop()  # Curious should be below it
+
+
+class InspectState(EnemyTimedState):
+    def startup(self):
+        if ENEMY_DEBUG:
+            print('Inspecting startup')
+        self.start_time = pygame.time.get_ticks()
+        self.sprite.movement = enemy_data['movement']['idle']
+        self.sprite.target_pos = self.sprite.pos
+
+    def update(self, dt, actions):
+        self.check_expiration()
+        if ENEMY_DEBUG:
+            print('What is here?!?!?!')
+            print(self.time_remaining)
+
+        if self.check_noise_thresholds() == 'attack':
+            self.sprite.entity_fsm.register('attack', AttackState(self.sprite))
+            self.sprite.entity_fsm.switch('attack')
+
+        if self.done:
+            self.sprite.entity_fsm.pop_all()
+
+
+class CuriousState(EnemyState):
+    def startup(self):
+        self.sprite.entity_fsm.register(
+            'realization', CuriousRealizationState(self.sprite, 300))
+        self.sprite.entity_fsm.push('realization')
+
+    def suspend(self):
+        sound_source = self.sprite.get_loudest_source()  # return dict of pos, and volume
+        if ENEMY_DEBUG:
+            print('Need a moment to realize that')
+
+    def wakeup(self):
+        if ENEMY_DEBUG:
+            print(f'Now, I will walk to {self.sprite.target_pos}')
+        sound_source = self.sprite.get_loudest_source()  # return dict of pos, and volume
+        self.sprite.target_pos = sound_source['pos']
+        self.sprite.movement = enemy_data['movement']['walk']
+
+    def cleanup(self):
+        # TODO:
+        # self.sprite.trigger_sound('sniff')
+        pass
+
+    def update(self, dt, actions):
+        self.check_done()
+
+        if self.check_noise_thresholds() == 'attack':
+            self.sprite.entity_fsm.register('attack', AttackState(self.sprite))
+            self.sprite.entity_fsm.switch('attack')
+
+        if self.done:
+            self.sprite.entity_fsm.register('inspect', InspectState(
+                self.sprite, enemy_data['inspect_duration']))
+            self.sprite.entity_fsm.push('inspect')
+
+    def check_done(self):
+        distance, _ = get_distance_direction_a_to_b(
+            self.sprite.pos, self.sprite.target_pos)
+
+        if distance < enemy_data['waypoint_radius']:
+            self.done = True
+
+
+class RoarState(EnemyTimedState):
+    def startup(self):
+        if ENEMY_DEBUG:
+            print('roar startup')
+        self.start_time = pygame.time.get_ticks()
+        self.sprite.movement = enemy_data['movement']['idle']
+        self.sprite.target_pos = self.sprite.pos
+        # TODO: trigger sound roar
+
+    def update(self, dt, actions):
+        self.check_expiration()
+        if ENEMY_DEBUG:
+            print('ROOOOOAAAR!!!')
+            print(self.time_remaining)
+
+        if self.done:
+            # self.done = False
+            self.sprite.entity_fsm.pop()  # Attack should be below it
+
+
+class AttackState(EnemyState):
+    def startup(self):
+        self.sprite.entity_fsm.register('roar', RoarState(
+            self.sprite, enemy_data['roar_duration']))
+        self.sprite.entity_fsm.push('roar')
+
+    def wakeup(self):
+        self.sprite.target_pos = self.sprite.get_loudest_source()['pos']
+        if ENEMY_DEBUG:
+            print(f'walk to {self.sprite.target_pos}')
+        self.sprite.movement = enemy_data['movement']['run']
+
+    def update(self, dt, actions):
+        self.check_done()
+
+        # update to new attack
+        # But now also be alert to curious noise threshold
+        if self.check_noise_thresholds() == 'attack' or 'curious':
+            sound_source = self.sprite.get_loudest_source()
+            self.sprite.target_pos = self.sprite.get_loudest_source()['pos']
+
+        if self.done:
+            self.sprite.entity_fsm.pop_all()
+
+    def check_done(self):
+        distance, _ = get_distance_direction_a_to_b(
+            self.sprite.pos, self.sprite.target_pos)
+
+        if distance < enemy_data['attack_radius']:
+            self.done = True
+
+
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, groups, collision_sprites, sound_sprites, pos, destination_points, player, trigger_spawn_footprint, trigger_spawn_soundsource):
+    def __init__(self, groups, collision_sprites, sound_sprites, pos, waypoints, player, trigger_spawn_footprint, trigger_spawn_soundsource, trigger_sound):
 
         # general setup
         super().__init__(groups)
 
-        self.image = pygame.Surface((38, 38), pygame.SRCALPHA)
+        self.image = pygame.Surface((30, 30), pygame.SRCALPHA)
         self.image.fill((255, 0, 0, 0))
         self.rect = self.image.get_rect(topleft=pos)
         self.pos = pygame.math.Vector2(self.rect.center)
@@ -21,89 +270,103 @@ class Enemy(pygame.sprite.Sprite):
         self.sound_sprites = sound_sprites
 
         # movement
-        self.destination_points = destination_points
-        self.destination_point_index = 0
+        self.waypoints = waypoints
+        self.waypoint_index = 0
         self.destination = self.pos
         self.direction = pygame.math.Vector2()
-        self.speed = ENEMY_MOVEMENT_SPEED
+        self.movement = enemy_data['movement']['idle']
         self.distance_travelled = 0
+        self.target_pos = self.pos
 
         # Interaction functions
         self.left = True  # Player starts on left foot
         self.trigger_spawn_footprint = trigger_spawn_footprint
         self.trigger_spawn_soundsource = trigger_spawn_soundsource
+        self.trigger_sound = trigger_sound
 
         # interaction
         self.noise_meter = {}
-        self.noise_meter_threshold = SOUNDBEAM_MAX_LOUDNESS * 0.3
-        self.notice_volume_decay = ENEMY_VOLUME_DECAY
         self.player = player
 
-    def move_to_point(self, dt):
-        _, direction = get_distance_direction_a_to_b(
-            self.pos, self.destination)
-        self.direction = direction
+        # FSM
+        self.entity_fsm = EntityFSM()
+        self.entity_fsm.register('default', DefaultState(self))
+        self.entity_fsm.register('idle', IdleState(
+            self, randint(*enemy_data['idle_duration_range'])))
+        self.entity_fsm.register('walk', WalkState(self))
+        self.entity_fsm.push('default')
 
-        self.move(dt)
+    def get_next_waypoint(self):
+        self.waypoint_index += 1
+        self.waypoint_index %= len(self.waypoints)
+        return pygame.math.Vector2(self.waypoints[self.waypoint_index])
 
     def move(self, dt):
-        self.pos += self.direction * self.speed * dt * 60
+        self.old_pos = pygame.math.Vector2(self.pos)
+        distance, self.direction = get_distance_direction_a_to_b(
+            self.pos, self.target_pos)
+
+        if distance <= (self.direction * self.movement['speed'] * dt * 60).magnitude():
+            self.pos = self.target_pos
+
+        else:
+            self.pos += self.direction * self.movement['speed'] * dt * 60
+
+        self.distance_travelled += (self.pos - self.old_pos).magnitude()
+
         self.hitbox.centerx = round(self.pos.x)
         self.hitbox.centery = round(self.pos.y)
         self.rect.center = self.hitbox.center
 
-        self.distance_travelled += (self.direction *
-                                    self.speed * dt * 60).magnitude()
+        if self.distance_travelled >= self.movement['footstep_distance']:
+            self.spawn_footprint()
 
-        if self.distance_travelled >= ENEMY_FOOTSTEP_DISTANCE:
-            offset_pos = self.direction * 20
-            self.trigger_spawn_footprint(
-                self.pos+offset_pos, self.direction, ENEMY_FOOTSTEP_VOLUME, self.left, 'enemy')
-            self.left = not self.left
-            self.distance_travelled = 0
+    def make_noise(self, noise):
+        self.trigger_sound(self.pos, 8, f'enemy_low_call')
+        self.trigger_spawn_soundsource(self.pos, 8, 'enemy')
+
+    def spawn_footprint(self):
+        offset_pos = self.direction * 20
+        self.trigger_spawn_footprint(
+            self.pos+offset_pos, self.direction, self.movement['footstep_volume'], self.left, 'enemy')
+        self.left = not self.left
+        self.distance_travelled = 0
 
     def update_noise_meter(self):
-        for sprite in self.sound_sprites:
-            if sprite.rect.colliderect(self.hitbox):
-                origin = sprite.origin_type
-                if origin not in self.noise_meter.keys():
-                    self.noise_meter[origin] = 0
-                self.noise_meter[origin] = max(
-                    [0, self.noise_meter[origin], sprite.volume])
+        for sound in self.sound_sprites:
+            if sound.rect.colliderect(self.hitbox):
+                if sound.origin_type in enemy_data['noise_sensitivity_list']:
+                    if sound.source not in self.noise_meter.keys():
+                        self.noise_meter[sound.source] = {
+                            'volume': 0, 'pos': sound.source.pos}
+                    self.noise_meter[sound.source] = {
+                        'volume': max([
+                            0,
+                            self.noise_meter[sound.source]['volume'],
+                            sound.volume
+                        ]),
+                        'pos': sound.source.pos
+                    }
 
-                # TODO: identify the source from which the sound came.
-        # print(f'noise-meter: {self.noise_meter}')
-
-    def check_noise_meter(self):
-        aggro = None
-        for key, val in self.noise_meter.items():
-            if val >= self.noise_meter_threshold:
-                aggro = key
-
-        # if aggro:
-        #     print(f"ROAR! I'm so angry at {key}.")
-        # else:
-        #     print('Okay! I have calmed down!')
+    def get_loudest_source(self):
+        loudest_source = 0
+        loudest_source_dict = {}
+        if self.noise_meter:
+            for key, val in self.noise_meter.items():
+                if val['volume'] > loudest_source:
+                    loudest_source = val['volume']
+                    loudest_source_dict = val
+        else:
+            loudest_source_dict = {'volume': 0, 'pos': pygame.math.Vector2()}
+        return loudest_source_dict
 
     def decay_noise_meter(self, dt):
         for key, val in self.noise_meter.items():
-            self.noise_meter[key] = max(
-                [0, val - ENEMY_VOLUME_DECAY * dt])
-
-    def check_destination_reached(self):
-        distance, _ = get_distance_direction_a_to_b(self.pos, self.destination)
-        old_destination = self.destination
-
-        if distance <= ENEMY_DESTINATION_RADIUS:
-            self.destination_point_index += 1
-            self.destination_point_index %= len(self.destination_points)
-            self.destination = self.destination_points[self.destination_point_index]
-            # print(
-            #     f'destination {old_destination} reached by {distance}: next destination point {self.destination}')
+            self.noise_meter[key]['volume'] = max(
+                [0, val['volume'] - enemy_data['noise_decay'] * dt])
 
     def update(self, dt, actions):
+        self.entity_fsm.execute(dt, actions)
+        self.move(dt)
         self.update_noise_meter()
-        self.check_noise_meter()
         self.decay_noise_meter(dt)
-        self.check_destination_reached()
-        self.move_to_point(dt)

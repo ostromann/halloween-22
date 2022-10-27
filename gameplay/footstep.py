@@ -14,7 +14,7 @@ class Footstep(pygame.sprite.Sprite):
         if self.origin == 'player':
             offset_size = 5
         elif self.origin == 'enemy':
-            offset_size = 15
+            offset_size = 10
 
         self.direction = pygame.math.Vector2(direction)
         self.angle = -self.direction.as_polar()[1] - 90
@@ -35,6 +35,7 @@ class Footstep(pygame.sprite.Sprite):
     def decay(self, dt):
         if self.brightness >= 20:
             self.brightness -= FOOTSTEP_FADEOUT * dt
+            print(self.brightness)
         self.image = self.image.convert_alpha()
         self.image.set_alpha(self.brightness)
 

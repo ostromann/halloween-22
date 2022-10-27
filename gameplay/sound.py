@@ -7,11 +7,12 @@ from settings import *
 
 
 class Soundbeam(pygame.sprite.Sprite):
-    def __init__(self, groups, collision_sprites, pos, direction, volume, origin_type='player'):
+    def __init__(self, groups, collision_sprites, pos, direction, volume, source, origin_type='player'):
         super().__init__(groups)
         self.volume = volume
         self.pos = pygame.math.Vector2(pos)
         self.origin_type = origin_type
+        self.source = source
 
         self.size_gain = 1
         self.speed = SOUNDBEAM_SPEED
@@ -51,37 +52,45 @@ class Soundbeam(pygame.sprite.Sprite):
         self.pos += self.direction * self.speed * dt * 60
 
         self.rect.centerx = round(self.pos.x)
-        self.collision('horizontal')
-
         self.rect.centery = round(self.pos.y)
-        self.collision('vertical')
+        self.collision()
 
-    def collision(self, direction):
+    def collision(self):
+        col_tol = SOUNDBEAM_COLLISION_TOLERANCE * 3
         for sprite in self.collision_sprites:
             if sprite.hitbox.colliderect(self.rect):
-                if self.direction.x > 0:    # moving right
-                    # self.pos.x = sprite.rect.left - self.rect.width / 2
-                    self.pos.x -= self.rect.width
-                    self.direction.x *= -1  # bouncing off
-                    # self.direction.y += random() * SOUNDBEAM_DIFFRACTION_FACTOR * \
-                    #     choice([-1, 1])
-                elif self.direction.x < 0:    # moving left
-                    # self.pos.x = sprite.rect.right + self.rect.width / 2
-                    self.pos.x += self.rect.width
-                    self.direction.x *= -1  # bouncing off
-                    # self.direction.y += random() * SOUNDBEAM_DIFFRACTION_FACTOR * \
-                    #     choice([-1, 1])
-                self.rect.centerx = round(self.pos.x)
+                if abs(sprite.hitbox.top - self.rect.bottom) < col_tol and self.direction.y > 0:
+                    self.pos.y -= self.rect.height  # set outside of sprite
+                    self.direction.y *= -1
+                if abs(sprite.hitbox.bottom - self.rect.top) < col_tol and self.direction.y < 0:
+                    self.pos.y += self.rect.height  # set outside of sprite
+                    self.direction.y *= -1
+                if abs(sprite.hitbox.right - self.rect.left) < col_tol and self.direction.x < 0:
+                    self.pos.x -= self.rect.width  # set outside of sprite
+                    self.direction.x *= -1
+                if abs(sprite.hitbox.left - self.rect.right) < col_tol and self.direction.x > 0:
+                    self.pos.x += self.rect.width  # set outside of sprite
+                    self.direction.x *= -1
 
-                if self.direction.y > 0:    # moving down
-                    # self.pos.y = sprite.rect.top - self.rect.height / 2
-                    self.pos.y -= self.rect.height
-                    self.direction.y *= -1  # bouncing off
-                elif self.direction.y < 0:    # moving up
-                    # self.pos.y = sprite.rect.bottom + self.rect.height / 2
-                    self.pos.y += self.rect.height
-                    self.direction.y *= -1  # bouncing off
-                self.rect.centery = round(self.pos.y)
+                # if self.direction.x > 0:
+                #     if abs(self.rect.right - sprite.rect.left) < SOUNDBEAM_COLLISION_TOLERANCE:
+                #         self.pos.x -= self.rect.width
+                #         self.direction.x *= -1
+                # elif self.direction.x < 0:
+                #     if self.rect.left <= sprite.rect.right:
+                #         self.pos.x += self.rect.width
+                #         self.direction.x *= -1
+                # self.rect.centerx = round(self.pos.x)
+
+                # if self.direction.y > 0:
+                #     if self.rect.bottom >= sprite.rect.top:
+                #         self.pos.y -= self.rect.height
+                #         self.direction.y *= -1
+                # elif self.direction.y < 0:
+                #     if self.rect.top <= sprite.rect.bottom:
+                #         self.pos.y += self.rect.height
+                #         self.direction.y *= -1
+                # self.rect.centery = round(self.pos.y)
 
     def animate(self, dt):
         self.surf = pygame.Surface(self.rect.size, pygame.SRCALPHA)
@@ -115,7 +124,7 @@ class SoundSource():
             y = cos((pi * 2 + phase_shift))
             direction = pygame.math.Vector2(x, y)
             self.soundbeams.append(
-                Soundbeam(self.groups, self.collision_sprites, self.pos, direction, self.volume, self.origin_type))
+                Soundbeam(self.groups, self.collision_sprites, self.pos, direction, self.volume, self, self.origin_type))
 
     def get_soundbeams(self):
         return self.soundbeams

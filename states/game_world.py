@@ -6,7 +6,8 @@ from debug import debug
 from pytmx.util_pygame import load_pygame
 
 from gameplay.enemy import Enemy
-from gameplay.tile import Tile
+from gameplay.soundplayer import SoundPlayer
+from gameplay.tile import Tile, LevelGoal
 from states.state import State, FSM
 from gameplay.camera import YSortCameraGroup
 from gameplay.boundary import Boundary
@@ -14,6 +15,7 @@ from gameplay.sound import SoundSource, Soundbeam
 from gameplay.player import Player
 from gameplay.objects import Key, Keyhole, Door
 from gameplay.footstep import Footstep
+from states.menues import LevelIntro
 
 from gameplay.utils import blitRotate2
 from settings import *
@@ -22,11 +24,11 @@ from settings import *
 class GameWorld(State):
     def __init__(self, game, blocks_update=None, blocks_render=None):
         super().__init__(game, blocks_update, blocks_render)
-        # self.display_surface = pygame.display.get_surface()
         self.display_surface = self.game.game_canvas
-        print(self.display_surface)
 
-    def load_level(self, path):
+    def load_level(self, level_num):
+        path = os.path.join(
+            'assets', 'levels', f'level_{level_num}.tmx')
         tmx_data = load_pygame(path)
 
         # Game logic layers first!
@@ -36,42 +38,42 @@ class GameWorld(State):
                 self.player = Player(
                     [self.visible_sprites, self.player_sprite], self.collision_sprites, (obj.x, obj.y), self.trigger_spawn_footprint, self.trigger_spawn_soundsource)
             if obj.name == 'enemy_spawn':
-                Enemy([self.visible_sprites], self.collision_sprites, (obj.x, obj.y), [
-                ], self.player, self.trigger_spawn_footprint, self.trigger_spawn_soundsource)
+                self.enemy = Enemy([self.visible_sprites], self.collision_sprites, self.alpha_sprites, (obj.x, obj.y), [
+                ], self.player, self.trigger_spawn_footprint, self.trigger_spawn_soundsource, self.trigger_sound)
+            if obj.name == 'level_goal':
+                self.level_goal = LevelGoal(obj, [self.visible_sprites])
+
+        layer = tmx_data.get_layer_by_name('Enemy_WP')
+        for obj in layer:
+            id = obj.name.split('_')[-1]
+            self.enemy.waypoints.append((obj.x, obj.y))
 
         for layer in tmx_data.layers:
-            if layer.name == 'Boundary':
-                for x, y, surf in layer.tiles():
-                    Tile((x*TILESIZE, y*TILESIZE), surf, [
-                         self.visible_sprites, self.collision_sprites])
-
-            if layer.name == 'Sound_Sources':
-                for obj in layer:
-                    print(f'Soundsource at {obj.x, obj.y}')
-            if layer.name == 'Grating_Objects':
-                for obj in layer:
-                    for i in range(0, 4):
-                        pos = (obj.x + i*4/20, obj.y+TILESIZE/2-3)
-                        tmp_surf = pygame.Surface((6, 6))
-                        Tile(pos, tmp_surf, [
-                             self.visible_sprites, self.collision_sprites])
-            if layer.name == 'Sound_Sources':
-                pass
+            # if layer.name == 'Sound_Sources':
+            #     for obj in layer:
+            #         print(f'Soundsource at {obj.x, obj.y}')
             if layer.name == 'Objects':
                 for obj in layer:
+                    print(obj.name)
                     if obj.name.split('_')[1] == 'door':
-                        color, type, id, closed = obj.name.split('_')
+                        color, type, rotate, closed = obj.name.split('_')
                         print(obj.name, closed)
-                        Door([self.visible_sprites, self.door_sprites], self.visible_sprites, self.collision_sprites,
-                             (obj.x, obj.y), (obj.width, obj.height), closed, color=color)
+                        Door([self.visible_sprites, self.collision_sprites, self.door_sprites], self.visible_sprites, self.collision_sprites,
+                             (obj.x, obj.y), (obj.width, obj.height), rotate, closed, color, self.trigger_sound)
                     elif obj.name.split('_')[1] == 'key':
-                        color, type, id = obj.name.split('_')
+                        color, type = obj.name.split('_')
+                        surf = obj.image
                         Key([self.visible_sprites, self.key_sprites], [
-                            self.collision_sprites], (obj.x, obj.y), self.player, color=color)
+                            self.collision_sprites], (obj.x, obj.y), self.player, surf, color=color)
                     elif obj.name.split('_')[1] == 'keyhole':
-                        color, type, id = obj.name.split('_')
+                        color, type = obj.name.split('_')
+                        surf = obj.image
                         Keyhole([self.visible_sprites], self.key_sprites,
-                                self.door_sprites, (obj.x, obj.y), color=color)
+                                self.door_sprites, (obj.x, obj.y), surf, color=color)
+            if layer.name == 'Boundary_Objects':
+                for obj in layer:
+                    Boundary([self.visible_sprites, self.collision_sprites],
+                             (obj.x, obj.y), (obj.width, obj.height))
 
     def startup(self):
         # Surface set up
@@ -97,18 +99,18 @@ class GameWorld(State):
         self.key_sprites = pygame.sprite.Group()
         self.door_sprites = pygame.sprite.Group()
 
+        self.sound_player = SoundPlayer()
+
         self.decay_counter = 0
         # self.collectible_sprites = pygame.sprite.Group()
 
-        # FSM for run-through
-        # self.fsm = FSM()
-        # self.fsm.register('prelevel', PreLevel(self))
-        # self.fsm.register('level', Level(self))
-        # self.fsm.push('prelevel')
-
         # Level set up
-        tmx_data = self.load_level(os.path.join(
-            'assets', 'levels', 'template.tmx'))
+        self.load_level(self.game.level)
+
+        # Show Level Intro screen
+        self.game.fsm.register('level_intro', LevelIntro(
+            self.game))
+        self.game.fsm.push('level_intro')
 
     def suspend(self):
         print('GameWorld suspend')
@@ -117,32 +119,29 @@ class GameWorld(State):
 
     def wakeup(self):
         print('GameWorld wakeup')
+        # self.startup()
         # Call when the state ontop of this one is popped
         pass
 
     def cleanup(self):
-        print('GameWorld cleanup')
+        # print('GameWorld cleanup')
         # Call when state is pop from the stack
         pass
 
     def update(self):
-        # print(self.game.actions)
-        if self.game.actions['start']:
-            print('push pause')
-            self.game.fsm.push('pause')
-
         self.visible_sprites.update(self.game.dt, self.game.actions)
         self.permanent_sprites.update(self.game.dt, self.game.actions)
         self.alpha_sprites.update(self.game.dt, self.game.actions)
         self.game.reset_keys()
-        # self.fsm.update()
+        self.check_death()
+        self.check_level_goal()
 
     def render(self):
 
-        self.visible_surf.fill('white')
+        self.visible_surf.fill('grey')
         for sprite in self.visible_sprites:
             self.visible_surf.blit(sprite.image, sprite.rect.topleft)
-            # draw outline rect for debugging
+            # # draw outline rect for debugging
             pygame.draw.rect(self.visible_surf, (133, 50, 0), sprite.rect, 1)
             pygame.draw.rect(self.visible_surf, (255, 0, 0), sprite.hitbox, 1)
 
@@ -150,11 +149,13 @@ class GameWorld(State):
             # TODO: Add fade out to this
             blitRotate2(self.permanent_surf, sprite.image,
                         sprite.rect.topleft, sprite.angle)
+
             # self.permanent_surf.blit(sprite.image, sprite.rect.topleft)
 
         for sprite in self.alpha_sprites:
             self.alpha_surf.blit(
                 sprite.image, sprite.rect.topleft, special_flags=pygame.BLEND_RGBA_SUB)
+            pygame.draw.rect(self.visible_surf, (255, 0, 0), sprite.rect, 1)
 
         # Fade outs
         self.decay_counter += self.game.dt
@@ -172,20 +173,52 @@ class GameWorld(State):
         self.display_surface.blit(self.alpha_surf, (0, 0))
         self.display_surface.blit(self.permanent_surf, (0, 0))
 
-        # debug(
-        #     f'{self.player.status}: {self.player.direction}({self.player.last_direction})')
-        if self.game.dt == 0:
-            debug('inf', 680, 440)
-        else:
-            debug(int(1/self.game.dt), 680, 440)
-        # self.fsm.render()
+        if ENEMY_DEBUG:
+            debug(self.display_surface,
+                  f'{self.enemy.entity_fsm.state_stack}')
+            debug(self.display_surface,
+                  f'{len(self.enemy.entity_fsm.state_stack)}', 30)
+            debug(self.display_surface,
+                  f'{self.enemy.get_loudest_source()}', 60)
+        if FPS_DEBUG:
+            if self.game.dt == 0:
+                debug(self.display_surface, 'inf', 680, 440)
+            else:
+                debug(self.display_surface, int(1/self.game.dt))
+
+    def trigger_sound(self, pos, volume, sound_type):
+        self.sound_player.play_random_sound(pos, volume, sound_type)
+        self.trigger_spawn_soundsource(pos, volume, sound_type)
 
     def trigger_spawn_footprint(self, pos, direction, volume, left, origin):
+        # TODO: Check which ground material there is and adjust sounds for that
+        # default_material = 'metal'
+        # if origin == 'player':
+        #     self.player.rect.colliderect()
+
         footstep = Footstep([self.permanent_sprites], pos,
                             direction, volume, left, origin)
-        self.trigger_spawn_soundsource(
-            footstep.sound_source_pos, volume, 'player')
+        self.trigger_sound(footstep.sound_source_pos,
+                           volume, f'{origin}_metal')
 
     def trigger_spawn_soundsource(self, pos, volume, origin):
         SoundSource([self.alpha_sprites], self.collision_sprites, pos,
                     volume, origin)
+
+    def check_death(self):
+        if hasattr(self, 'enemy'):
+            if self.player.hitbox.colliderect(self.enemy.hitbox):
+                print('death encountered')
+                self.game.fsm.register(
+                    'run-through', GameWorld(self.game, blocks_update=True))
+                print('new game world registered')
+                self.game.fsm.switch('death')
+                print('switch to death registered')
+                print(self.game.fsm.state_stack)
+
+    def check_level_goal(self):
+        if self.player.hitbox.colliderect(self.level_goal.rect):
+            self.game.level += 1
+            self.game.fsm.register(
+                'run-through', GameWorld(self.game, blocks_update=True))
+            self.game.fsm.switch('run-through')

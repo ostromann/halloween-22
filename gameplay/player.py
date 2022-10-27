@@ -39,7 +39,7 @@ class Player(pygame.sprite.Sprite):
 
     def stomp(self):
         self.trigger_spawn_soundsource(
-            self.pos, SOUNDBEAM_MAX_LOUDNESS, 'player')
+            self.pos, player_data['stomp_volume'], 'player')
 
     def cooldowns(self):
         current_time = pygame.time.get_ticks()
@@ -52,8 +52,8 @@ class Player(pygame.sprite.Sprite):
         # Movement
         self.status = 'idle'
         self.direction = pygame.math.Vector2(self.last_direction)
-        self.direction.x = actions['right'] - actions['left']
-        self.direction.y = actions['down'] - actions['up']
+        self.direction.x = actions['d'] - actions['a']
+        self.direction.y = actions['s'] - actions['w']
         if self.direction.magnitude() != 0:
             self.status = 'walk'
             self.direction = self.direction.normalize()
@@ -64,7 +64,7 @@ class Player(pygame.sprite.Sprite):
         elif actions['LSHIFT']:
             self.status = 'run'
 
-        if actions['space']:
+        if actions['SPACE']:
             if not self.stomping:
                 self.status = 'idle'
                 self.stomp()

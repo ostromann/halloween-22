@@ -1,4 +1,5 @@
 import os
+from winreg import REG_OPTION_CREATE_LINK
 import pygame
 from gameplay.boundary import Boundary
 from gameplay.sound import SoundSource, Soundbeam
@@ -8,13 +9,14 @@ from settings import *
 
 
 class Key(pygame.sprite.Sprite):
-    def __init__(self, groups, collision_groups, pos, player, color):
+    def __init__(self, groups, collision_groups, pos, player, surf, color):
         super().__init__(groups)
 
         self.color = color
 
-        self.image = pygame.Surface((20, 20))
-        self.image.fill((0, 204, 204))
+        # self.image = pygame.image.load(os.path.join(
+        #     'assets', 'graphics', 'objects', f'key_{color}', f'key_{color}_0.png'))
+        self.image = surf
         self.rect = self.image.get_rect(topleft=pos)
 
         self.pos = pygame.math.Vector2(self.rect.center)
@@ -46,7 +48,7 @@ class Key(pygame.sprite.Sprite):
 
             # TODO: Get the players current speed
             self.pos += direction * \
-                self.pulling_entity.movement_stats['sneak']['speed'] * dt * 60
+                self.pulling_entity.movement_stats['walk']['speed'] * dt * 60
 
         self.hitbox.centerx = round(self.pos.x)
         self.collision('horizontal')
@@ -85,13 +87,14 @@ class Key(pygame.sprite.Sprite):
 
 
 class Keyhole(pygame.sprite.Sprite):
-    def __init__(self, groups, key_sprites, door_sprites, pos, color):
+    def __init__(self, groups, key_sprites, door_sprites, pos, surf, color):
         super().__init__(groups)
 
         self.color = color
 
-        self.image = pygame.Surface((20, 20))
-        self.image.fill((0, 128, 128))
+        # self.image = pygame.image.load(os.path.join(
+        #     'assets', 'graphics', 'objects', f'keyhole_{color}', f'keyhole_{color}_0.png'))
+        self.image = surf
         self.rect = self.image.get_rect(topleft=pos)
         # pygame.draw.rect(self.image, (0,204,204), self.rect, width=)
         self.hitbox = self.rect
@@ -135,23 +138,31 @@ class Keyhole(pygame.sprite.Sprite):
 
 
 class Door(pygame.sprite.Sprite):
-    def __init__(self, groups, visible_sprites, collision_sprites, pos, size, closed, color):
+    def __init__(self, groups, visible_sprites, collision_sprites, pos, size, rotate, closed, color, trigger_toggle_sound):
         # self.sprite_type = sprite_type
         super().__init__(groups)
         self.visible_sprites = visible_sprites
         self.collision_sprites = collision_sprites
         self.color = color
         self.pos = pos
-        self.original_pos = pos
+        self.trigger_toggle_sound = trigger_toggle_sound
+        self.rotate = REG_OPTION_CREATE_LINK
 
-        self.image = pygame.image.load(os.path.join(
-            'assets', 'graphics', 'objects', f'door_{color}', f'door_{color}_0.png'))
+        # TODO: Fix rotation!
+        if rotate == 'rotate':
+            self.image = pygame.image.load(os.path.join(
+                'assets', 'graphics', 'objects', f'door_{color}', f'door_{color}_0.png'))
+            inflate = (-26, 0)
+        else:
+            self.image = pygame.image.load(os.path.join(
+                'assets', 'graphics', 'objects', f'door_{color}', f'door_{color}_0_rotate.png'))
+            inflate = (0, -26)
         self.rect = self.image.get_rect(topleft=(self.pos))
 
-        if size[0] > size[1]:
-            inflate = (0, -9)
-        else:
-            inflate = (-9, 0)
+        # if size[0] > size[1]:
+        #     inflate = (0, -9)
+        # else:
+        #     inflate = (-9, 0)
 
         self.hitbox = self.rect.inflate(inflate)
         self.hitbox.center = self.rect.center
@@ -167,6 +178,9 @@ class Door(pygame.sprite.Sprite):
 
     def toggle_state(self):
         # TODO: Fix the SoundSource. Objects outside the game world should only trigger the creation of a SoundSource in the gameworld!
+        volume = 15
+        sound_type = 'door'
+        self.trigger_toggle_sound(self.pos, volume, sound_type)
         self.closed = not self.closed
         if self.closed:
             self.add([self.visible_sprites, self.collision_sprites])

@@ -1,5 +1,6 @@
 from csv import reader
 from os import walk
+import os
 import pygame
 
 
@@ -25,6 +26,15 @@ import pygame
 #   return surface_list
 
 # def surf_rotate()
+
+def import_audio_folder(path):
+    sound_list = []
+
+    for _, _, audio_files in walk(path):
+        for audio in audio_files:
+            sound_list.append(pygame.mixer.Sound(os.path.join(path, audio)))
+
+    return sound_list
 
 
 def blitRotate2(surf, image, topleft, angle):
