@@ -30,11 +30,11 @@ class MainMenu(State):
         self.game.reset_keys()
 
     def render(self):
-        self.display_surface.fill((0, 0, 0))
-        self.game.draw_text(self.display_surface, "echo escape", 'title',
+        self.game.game_canvas.fill((0, 0, 0))
+        self.game.draw_text(self.game.game_canvas, "echo escape", 'title',
                             (255, 255, 255), self.game.GAME_W/2, self.game.GAME_H*2/5)
 
-        self.game.draw_text(self.display_surface, "Press [ENTER] to start the escape.", 'main',
+        self.game.draw_text(self.game.game_canvas, "Press [ENTER] to start the escape.", 'main',
                             (255, 255, 255), self.game.GAME_W/2, 3*self.game.GAME_H/4)
 
 
@@ -156,6 +156,6 @@ class LevelIntro(State):
         if self.print_line_index < len(text):
             for i, line in enumerate(text[:self.print_line_index]):
                 self.game.draw_text(self.game.game_canvas, line, 'main',
-                                    (223, 12, 0), self.game.GAME_W/2, start_height + i * row_offset)
+                                    (255, 255, 255), self.game.GAME_W/2, start_height + i * row_offset)
         else:
             self.all_lines_printed = True

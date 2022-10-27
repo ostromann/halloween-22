@@ -13,17 +13,16 @@ import pygame
 # 		return terrain_map
 
 
-# def import_folder(path, scale=None):
-#   surface_list = []
+def import_image_folder(path):
+    surface_list = []
 
-#   for _, __, img_files in walk(path):
-#     for image in img_files:
-#       full_path = path + '/' + image
-#       image_surf = pygame.image.load(full_path).convert_alpha()
-#       if scale:
-#         image_surf = pygame.transform.scale(image_surf, (128, 128))
-#       surface_list.append(image_surf)
-#   return surface_list
+    for _, _, img_files in walk(path):
+        for image in img_files:
+            surface_list.append(pygame.image.load(
+                os.path.join(path, image)).convert_alpha())
+
+    return surface_list
+
 
 # def surf_rotate()
 

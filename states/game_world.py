@@ -14,7 +14,7 @@ from gameplay.boundary import Boundary
 from gameplay.sound import SoundSource, Soundbeam
 from gameplay.player import Player
 from gameplay.objects import Key, Keyhole, Door
-from gameplay.footstep import Footstep
+from gameplay.footstep import Footprint, FootprintPlayer
 from states.menues import LevelIntro
 
 from gameplay.utils import blitRotate2
@@ -83,8 +83,10 @@ class GameWorld(State):
         self.decay_surf.fill((0, 0, 0, 1))
         self.footprint_decay_surf = pygame.Surface(
             (WIDTH, HEIGHT), pygame.SRCALPHA)
-        self.footprint_decay_surf.fill((255, 255, 255, 1))
-        self.permanent_surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        self.footprint_decay_surf = pygame.Surface(
+            (WIDTH, HEIGHT), pygame.SRCALPHA)
+        self.footprint_decay_surf.fill((0, 0, 0, 254))
+        self.footprint_surf = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
 
         # Surface initialization
         self.alpha_surf.fill((0, 0, 0, 255))
@@ -93,13 +95,14 @@ class GameWorld(State):
         # self.visible_sprites = YSortCameraGroup()
         self.visible_sprites = pygame.sprite.Group()
         self.alpha_sprites = pygame.sprite.Group()
-        self.permanent_sprites = pygame.sprite.Group()
+        self.footprint_sprites = pygame.sprite.Group()
         self.player_sprite = pygame.sprite.Group()
         self.collision_sprites = pygame.sprite.Group()
         self.key_sprites = pygame.sprite.Group()
         self.door_sprites = pygame.sprite.Group()
 
         self.sound_player = SoundPlayer()
+        self.footprint_player = FootprintPlayer()
 
         self.decay_counter = 0
         # self.collectible_sprites = pygame.sprite.Group()
@@ -130,7 +133,7 @@ class GameWorld(State):
 
     def update(self):
         self.visible_sprites.update(self.game.dt, self.game.actions)
-        self.permanent_sprites.update(self.game.dt, self.game.actions)
+        self.footprint_sprites.update(self.game.dt, self.game.actions)
         self.alpha_sprites.update(self.game.dt, self.game.actions)
         self.game.reset_keys()
         self.check_death()
@@ -142,15 +145,12 @@ class GameWorld(State):
         for sprite in self.visible_sprites:
             self.visible_surf.blit(sprite.image, sprite.rect.topleft)
             # # draw outline rect for debugging
-            pygame.draw.rect(self.visible_surf, (133, 50, 0), sprite.rect, 1)
-            pygame.draw.rect(self.visible_surf, (255, 0, 0), sprite.hitbox, 1)
+            # pygame.draw.rect(self.visible_surf, (133, 50, 0), sprite.rect, 1)
+            # pygame.draw.rect(self.visible_surf, (255, 0, 0), sprite.hitbox, 1)
 
-        for sprite in self.permanent_sprites:
-            # TODO: Add fade out to this
-            blitRotate2(self.permanent_surf, sprite.image,
+        for sprite in self.footprint_sprites:
+            blitRotate2(self.footprint_surf, sprite.image,
                         sprite.rect.topleft, sprite.angle)
-
-            # self.permanent_surf.blit(sprite.image, sprite.rect.topleft)
 
         for sprite in self.alpha_sprites:
             self.alpha_surf.blit(
@@ -165,13 +165,12 @@ class GameWorld(State):
             self.alpha_surf.blit(self.decay_surf, (0, 0),
                                  special_flags=pygame.BLEND_RGBA_ADD)
             # Fade out footprints
-            # print('fade out footprints')
-            # self.permanent_surf.blit(self.decay_surf, (0, 0),
+            # self.footprint_surf.blit(self.decay_surf, (0, 0),
             #                          special_flags=pygame.BLEND_RGBA_SUB)
 
         self.display_surface.blit(self.visible_surf, (0, 0))
         self.display_surface.blit(self.alpha_surf, (0, 0))
-        self.display_surface.blit(self.permanent_surf, (0, 0))
+        self.display_surface.blit(self.footprint_surf, (0, 0))
 
         if ENEMY_DEBUG:
             debug(self.display_surface,
@@ -186,6 +185,8 @@ class GameWorld(State):
             else:
                 debug(self.display_surface, int(1/self.game.dt))
 
+    # ---- SOUNDS ----
+
     def trigger_sound(self, pos, volume, sound_type):
         self.sound_player.play_random_sound(pos, volume, sound_type)
         self.trigger_spawn_soundsource(pos, volume, sound_type)
@@ -196,9 +197,9 @@ class GameWorld(State):
         # if origin == 'player':
         #     self.player.rect.colliderect()
 
-        footstep = Footstep([self.permanent_sprites], pos,
-                            direction, volume, left, origin)
-        self.trigger_sound(footstep.sound_source_pos,
+        footprint = self.footprint_player.create_footprint([self.footprint_sprites], pos,
+                                                           direction, volume, left, origin)
+        self.trigger_sound(footprint.sound_source_pos,
                            volume, f'{origin}_metal')
 
     def trigger_spawn_soundsource(self, pos, volume, origin):

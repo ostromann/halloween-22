@@ -2,7 +2,7 @@
 <map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="36" height="24" tilewidth="20" tileheight="20" infinite="0" nextlayerid="11" nextobjectid="196">
  <tileset firstgid="1" source="../graphics/tileset/echo_escape_tileset.tsx"/>
  <tileset firstgid="101" source="../graphics/tileset/echo_escape_objects.tsx"/>
- <tileset firstgid="108" source="../graphics/tileset/echo_escape_sound_sources.tsx"/>
+ <tileset firstgid="113" source="../graphics/tileset/echo_escape_sound_sources.tsx"/>
  <layer id="1" name="Boundary" width="36" height="24">
   <data encoding="csv">
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -78,8 +78,6 @@
  <objectgroup id="4" name="Objects">
   <object id="173" name="blue_keyhole_00" gid="105" x="100" y="120" width="20" height="20"/>
   <object id="174" name="blue_key_00" gid="103" x="100" y="40" width="20" height="20"/>
-  <object id="189" name="blue_door_00_closed" gid="101" x="140" y="60" width="20" height="40"/>
-  <object id="190" name="blue_door_01_closed" gid="101" x="140" y="100" width="20" height="40" rotation="90"/>
  </objectgroup>
  <objectgroup color="#ff0000" id="6" name="Grating_Objects">
   <object id="157" x="320" y="200" width="20" height="160"/>
@@ -113,10 +111,10 @@
   </object>
  </objectgroup>
  <objectgroup id="8" name="Sound_Sources">
-  <object id="163" gid="108" x="240" y="60" width="20" height="20"/>
-  <object id="164" gid="108" x="120" y="300" width="20" height="20"/>
-  <object id="165" gid="108" x="280" y="320" width="20" height="20"/>
-  <object id="166" gid="108" x="120" y="420" width="20" height="20"/>
-  <object id="167" gid="108" x="40" y="320" width="20" height="20"/>
+  <object id="163" gid="113" x="240" y="60" width="20" height="20"/>
+  <object id="164" gid="113" x="120" y="300" width="20" height="20"/>
+  <object id="165" gid="113" x="280" y="320" width="20" height="20"/>
+  <object id="166" gid="113" x="120" y="420" width="20" height="20"/>
+  <object id="167" gid="113" x="40" y="320" width="20" height="20"/>
  </objectgroup>
 </map>

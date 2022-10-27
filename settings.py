@@ -25,12 +25,12 @@ player_data = {
         'walk': {
             'speed': 1,
             'footstep_distance': 20,
-            'footstep_volume': 12
+            'footstep_volume': 16
         },
         'run': {
             'speed': 2,
             'footstep_distance': 40,
-            'footstep_volume': 24
+            'footstep_volume': 26
 
         },
         'sneak': {
@@ -43,12 +43,13 @@ player_data = {
 
 
 enemy_data = {
+    'max_attack_time': 10000,
     'waypoint_radius': 20,
     'attack_radius': 5,
     'idle_duration_range': [500, 2000],
     'inspect_duration': 2000,
     'roar_duration': 1000,
-    'curious_noise_threshold': 8,
+    'curious_noise_threshold': 4,
     'attack_noise_threshold': 16,
     'noise_decay': 2,
     'noise_sensitivity_list': ['player', 'player_item'],
@@ -61,7 +62,7 @@ enemy_data = {
         'walk': {
             'speed': 1,
             'footstep_distance': 30,
-            'footstep_volume': 5
+            'footstep_volume': 8
         },
         'run': {
             'speed': 2,

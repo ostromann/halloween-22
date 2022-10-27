@@ -1,14 +1,39 @@
+import os
 import pygame
 
 from gameplay.sound import SoundSource
+from gameplay.utils import import_image_folder
 from settings import *
 
 
-class Footstep(pygame.sprite.Sprite):
-    def __init__(self, groups, pos, direction, volume, left, origin):
+class FootprintPlayer():
+    def __init__(self):
+        base_path = os.path.join('assets', 'graphics', 'footprints')
+        pygame.mixer.init()
+        self.frames = {
+            # footsteps
+            'player': import_image_folder(os.path.join(base_path, 'player')),
+            'enemy': import_image_folder(os.path.join(base_path, 'enemy')),
+        }
+        print(self.frames)
+
+    def create_footprint(self, groups, pos, direction, volume, left, origin):
+        animation_frames = self.frames[origin]
+        return Footprint(groups, pos, direction, volume,
+                         left, origin, animation_frames)
+
+
+class Footprint(pygame.sprite.Sprite):
+    def __init__(self, groups, pos, direction, volume, left, origin, animation_frames):
         super().__init__(groups)
         self.volume = volume
         self.left = left
+
+        self.frame_index = 0
+        self.animation_speed = 0.03
+        self.frames = animation_frames
+        self.image = self.frames[self.frame_index]
+        self.rect = self.image.get_rect(center=pos)
 
         self.origin = origin
         if self.origin == 'player':
@@ -23,21 +48,25 @@ class Footstep(pygame.sprite.Sprite):
 
         self.pos = pygame.math.Vector2(pos + self.offset)
 
-        self.image = pygame.image.load(
-            f'assets/graphics/footprint_{self.origin}.png').convert_alpha()
-        self.brightness = 255
-
         if not left:
             self.image = pygame.transform.flip(self.image, True, False)
         self.rect = self.image.get_rect(center=self.pos)
         self.sound_source_pos = self.rect.center
 
-    def decay(self, dt):
-        if self.brightness >= 20:
-            self.brightness -= FOOTSTEP_FADEOUT * dt
-            print(self.brightness)
-        self.image = self.image.convert_alpha()
-        self.image.set_alpha(self.brightness)
+    def animate(self, dt):
+        self.frame_index += self.animation_speed * dt * 60
+        if self.frame_index >= len(self.frames):
+            self.kill()
+        else:
+            self.image = self.frames[int(self.frame_index)]
+
+    # def decay(self, dt):
+    #     if self.brightness >= 20:
+    #         self.brightness -= FOOTSTEP_FADEOUT * dt
+    #         print(self.brightness)
+    #     self.image = self.image.convert_alpha()
+    #     self.image.set_alpha(self.brightness)
 
     def update(self, dt, actions):
-        self.decay(dt)
+        self.animate(dt)
+        # self.decay(dt)

@@ -32,13 +32,13 @@ class Key(pygame.sprite.Sprite):
         if self.is_pulled:
             distance, _ = get_distance_direction_a_to_b(
                 self.pos, self.pulling_entity.pos)
-            if distance >= 1.5 * OBJECT_PULLING_RADIUS or actions['LCTRL']:
+            if distance >= 1.5 * OBJECT_PULLING_RADIUS or actions['e']:
                 self.is_pulled = False
 
         else:
             distance, _ = get_distance_direction_a_to_b(
                 self.pos, self.pulling_entity.pos)
-            if distance <= OBJECT_PULLING_RADIUS and actions['LCTRL']:
+            if distance <= OBJECT_PULLING_RADIUS and actions['e']:
                 self.is_pulled = True
 
     def move(self, dt):
