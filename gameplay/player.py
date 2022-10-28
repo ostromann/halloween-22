@@ -11,7 +11,7 @@ class Player(pygame.sprite.Sprite):
 
         # movement
         # topleft because this pos comes from the 64 64 gridworld in tiled
-        self.image = pygame.Surface((18, 18))
+        self.image = pygame.Surface((18, 18), pygame.SRCALPHA)
         # self.image.fill((0, 0, 0, 0))
         self.rect = self.image.get_rect(topleft=pos)
         self.pos = pygame.math.Vector2(self.rect.center)

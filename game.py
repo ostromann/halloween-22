@@ -145,7 +145,6 @@ class Game():
         self.prev_time = now
 
     def draw_text(self, surface, text, font_type, color, x, y):
-
         if font_type == 'title':
             font = self.title_font
         elif font_type == 'main':

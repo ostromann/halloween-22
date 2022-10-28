@@ -15,7 +15,7 @@ TILESIZE = 20
 WALL_WIDTH = 20
 
 player_data = {
-    'stomp_volume': 30,
+    'stomp_volume': 40,
     'movement': {
         'idle': {
             'speed': 0,
@@ -77,7 +77,7 @@ level_data = {
     0: {
         'intro_text': [
             'You wake up from a nightmare',
-            'Cold sweat runs down your neck',
+            'Soaked in cold sweat',
             'A perfect darkness fills your room',
             'Hold [W,A,S,D] to move.',
             'Press [ENTER] to continue.'
@@ -90,10 +90,12 @@ level_data = {
     },
     1: {
         'intro_text': [
-            'You groped your way for the light switch',
-            'The lamps light up, but still only darkness',
-            'Suddenly, you hear an all familiar sound from the hallway',
+            'You reach the light switch and flick it',
+            'But still, all you see is darkness',
+            '',
+            'You hear an all familiar sound from the hallway',
             'It\'s your dog\'s squeaking toy.',
+            '',
             'Press [SPACE] to stomp',
             'Hold [LSHIFT] to run',
         ],
@@ -107,10 +109,12 @@ level_data = {
             'Your dog\'s bed is empty',
             'Only the squeaking toy is left behind',
             '',
-            'All of a sudden a door swings open and you fall through',
-            'Behind you, you can hear the rumble of a mechanism',
+            'A trapdoor swings open and you fall through',
+            'You can hear the rumble of a mechanism',
             'There must be a way back!',
+            '',
             'Press [E] to pull an object.',
+            'Press [E] again to let loose.'
         ],
         'intro_audio': None,
         'outro_text': [
@@ -120,11 +124,13 @@ level_data = {
 
     3: {
         'intro_text': [
-            'With echoing steps you enter a vast space',
-            'Soon you realize, you\'re not alone here',
-            'Heavy steps in the darkness send shivers down your spine',
+            'You enter a vast space',
+            'Soon you realize, you\'re not alone',
+            'Heavy steps echo in the darkness',
+            '',
             'Water drops through some cracks in the walls',
             'These could be your way out!',
+            '',
             'Hold [LCTRL] to sneak',
         ],
         'intro_audio': None,
@@ -135,8 +141,10 @@ level_data = {
         'intro_text': [
             'You\'ve evaded the dreadful beast',
             'Now you find yourself in some kind of prison',
+            '',
             'And there, from behind the bars',
-            'You can hear the familiar sounds of your dog',
+            'You can hear your dog barking',
+            '',
             'But once again, there is someone else here.'
         ],
         'intro_audio': None,
@@ -164,7 +172,7 @@ SOUNDBEAM_MAX_SIZE_GAIN = 1
 SOUNDBEAM_NUMBERS = 256
 SOUNDBEAM_SPEED = 2
 SOUNDBEAM_ATTENUATION = 20
-SOUNDBEAM_MAX_LOUDNESS = 30
+SOUNDBEAM_MAX_LOUDNESS = 40
 SOUNDBEAM_DIFFRACTION_FACTOR = 0
 
 

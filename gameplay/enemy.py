@@ -60,7 +60,7 @@ class IdleState(EnemyTimedState):
 
         self.make_noise = not randint(0, 5)
         if self.make_noise:
-            self.sprite.make_noise('enemy_low_call')
+            self.sprite.make_noise('enemy_idle')
 
     def update(self, dt, actions):
         self.check_expiration()
@@ -216,6 +216,8 @@ class RoarState(EnemyTimedState):
         self.sprite.target_pos = self.sprite.pos
         # TODO: trigger sound roar
 
+        self.sprite.make_noise('enemy_roar')
+
     def update(self, dt, actions):
         self.check_expiration()
         if ENEMY_DEBUG:
@@ -239,6 +241,8 @@ class AttackState(EnemyTimedState):
         if ENEMY_DEBUG:
             print(f'walk to {self.sprite.target_pos}')
         self.sprite.movement = enemy_data['movement']['run']
+
+        self.sprite.make_noise('enemy_attack')
 
     def update(self, dt, actions):
         self.check_done()
@@ -351,7 +355,7 @@ class Enemy(pygame.sprite.Sprite):
                     self.rect.centery = round(self.pos.y)
 
     def make_noise(self, noise):
-        self.trigger_sound(self.pos, 8, f'enemy_low_call')
+        self.trigger_sound(self.pos, 8, noise)
         self.trigger_spawn_soundsource(self.pos, 8, 'enemy')
 
     def spawn_footprint(self):
