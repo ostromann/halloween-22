@@ -79,6 +79,7 @@ level_data = {
             'You wake up from a nightmare',
             'Soaked in cold sweat',
             'A perfect darkness fills your room',
+            '...',
             'Hold [W,A,S,D] to move.',
             'Press [ENTER] to continue.'
         ],
@@ -92,10 +93,10 @@ level_data = {
         'intro_text': [
             'You reach the light switch and flick it',
             'But still, all you see is darkness',
-            '',
+            '...',
             'You hear an all familiar sound from the hallway',
             'It\'s your dog\'s squeaking toy.',
-            '',
+            '...',
             'Press [SPACE] to stomp',
             'Hold [LSHIFT] to run',
         ],
@@ -108,13 +109,13 @@ level_data = {
         'intro_text': [
             'Your dog\'s bed is empty',
             'Only the squeaking toy is left behind',
-            '',
+            '...',
             'A trapdoor swings open and you fall through',
             'You can hear the rumble of a mechanism',
             'There must be a way back!',
-            '',
+            '...',
             'Press [E] to pull an object.',
-            'Press [E] again to let loose.'
+            'Press [E] again to let loose.',
         ],
         'intro_audio': None,
         'outro_text': [
@@ -127,10 +128,10 @@ level_data = {
             'You enter a vast space',
             'Soon you realize, you\'re not alone',
             'Heavy steps echo in the darkness',
-            '',
+            '...',
             'Water drops through some cracks in the walls',
             'These could be your way out!',
-            '',
+            '...',
             'Hold [LCTRL] to sneak',
         ],
         'intro_audio': None,
@@ -141,10 +142,10 @@ level_data = {
         'intro_text': [
             'You\'ve evaded the dreadful beast',
             'Now you find yourself in some kind of prison',
-            '',
+            '...',
             'And there, from behind the bars',
             'You can hear your dog barking',
-            '',
+            '...',
             'But once again, there is someone else here.'
         ],
         'intro_audio': None,
