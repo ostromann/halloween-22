@@ -87,7 +87,6 @@ class WalkState(EnemyState):
             print(f'walk to {self.sprite.target_pos}')
 
     def cleanup(self):
-        # spawn a last footrpint
         self.sprite.spawn_footprint()
 
     def update(self, dt, actions):
