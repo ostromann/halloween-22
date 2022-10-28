@@ -1,7 +1,7 @@
 # Debug Settings
 ENEMY_DEBUG = False
 PLAYER_DEBUG = False
-FPS_DEBUG = True
+FPS_DEBUG = False
 
 # game setup
 WIDTH = 720  # 480  # 720
@@ -79,7 +79,7 @@ level_data = {
             'You wake up from a nightmare',
             'Cold sweat runs down your neck',
             'A perfect darkness fills your room',
-            'Use [W,A,S,D] to move.'
+            'Hold [W,A,S,D] to move.',
             'Press [ENTER] to continue.'
         ],
         'intro_audio': None,
@@ -94,8 +94,8 @@ level_data = {
             'The lamps light up, but still only darkness',
             'Suddenly, you hear an all familiar sound from the hallway',
             'It\'s your dog\'s squeaking toy.',
-            'Use [SPACE] to stomp',
-            'Use [LSHIFT] to run'
+            'Press [SPACE] to stomp',
+            'Hold [LSHIFT] to run',
         ],
         'intro_audio': None,
         'outro_text': [
@@ -110,7 +110,7 @@ level_data = {
             'All of a sudden a door swings open and you fall through',
             'Behind you, you can hear the rumble of a mechanism',
             'There must be a way back!',
-            'Use [E] to pull an object.'
+            'Press [E] to pull an object.',
         ],
         'intro_audio': None,
         'outro_text': [
@@ -124,9 +124,8 @@ level_data = {
             'Soon you realize, you\'re not alone here',
             'Heavy steps in the darkness send shivers down your spine',
             'Water drops through some cracks in the walls',
-            'These could be your way out!'
-            'Use [LCTRL] to sneak'
-
+            'These could be your way out!',
+            'Hold [LCTRL] to sneak',
         ],
         'intro_audio': None,
         'outro_text': [],
