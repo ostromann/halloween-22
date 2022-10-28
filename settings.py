@@ -79,7 +79,7 @@ level_data = {
             'You wake up from a nightmare',
             'Cold sweat runs down your neck',
             'A perfect darkness fills your room',
-            '',
+            'Use [W,A,S,D] to move.'
             'Press [ENTER] to continue.'
         ],
         'intro_audio': None,
@@ -91,18 +91,14 @@ level_data = {
     1: {
         'intro_text': [
             'You groped your way for the light switch',
-            'And hear, how the lamps light up',
-            'But no light meets your eyes',
-            '',
+            'The lamps light up, but still only darkness',
             'Suddenly, you hear an all familiar sound from the hallway',
-            'It\'s your dog\'s squeaking toy.'
+            'It\'s your dog\'s squeaking toy.',
+            'Use [SPACE] to stomp',
+            'Use [LSHIFT] to run'
         ],
         'intro_audio': None,
         'outro_text': [
-            'You are past the strange hallway',
-            'There, you find your dog\'s empty bed',
-            'Your hands still feel the warmth of it',
-            'But you only find the squeaking toy in it.'
         ],
         'outro_audio': None
     },
@@ -113,7 +109,8 @@ level_data = {
             '',
             'All of a sudden a door swings open and you fall through',
             'Behind you, you can hear the rumble of a mechanism',
-            'There must be a way back!'
+            'There must be a way back!',
+            'Use [E] to pull an object.'
         ],
         'intro_audio': None,
         'outro_text': [
@@ -123,14 +120,13 @@ level_data = {
 
     3: {
         'intro_text': [
-            'These artifacts open passages in this labyrinth',
-            '',
             'With echoing steps you enter a vast space',
             'Soon you realize, you\'re not alone here',
             'Heavy steps in the darkness send shivers down your spine',
-            '',
             'Water drops through some cracks in the walls',
             'These could be your way out!'
+            'Use [LCTRL] to sneak'
+
         ],
         'intro_audio': None,
         'outro_text': [],
@@ -142,7 +138,6 @@ level_data = {
             'Now you find yourself in some kind of prison',
             'And there, from behind the bars',
             'You can hear the familiar sounds of your dog',
-            '',
             'But once again, there is someone else here.'
         ],
         'intro_audio': None,

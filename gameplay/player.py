@@ -1,8 +1,6 @@
 import pygame
 from random import random
-from gameplay.entity import Entity
-from gameplay.sound import SoundSource
-from gameplay.footstep import Footprint
+
 from gameplay.utils import *
 from settings import *
 
