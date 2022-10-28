@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="36" height="24" tilewidth="20" tileheight="20" infinite="0" nextlayerid="11" nextobjectid="464">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="36" height="24" tilewidth="20" tileheight="20" infinite="0" nextlayerid="11" nextobjectid="767">
  <tileset firstgid="1" source="../graphics/tileset/echo_escape_tileset.tsx"/>
- <tileset firstgid="101" source="../graphics/tileset/echo_escape_objects.tsx"/>
- <tileset firstgid="113" source="../graphics/tileset/echo_escape_sound_sources.tsx"/>
- <layer id="1" name="Boundary" width="36" height="24">
+ <tileset firstgid="31" source="../graphics/tileset/echo_escape_objects.tsx"/>
+ <tileset firstgid="43" source="../graphics/tileset/echo_escape_sound_sources.tsx"/>
+ <layer id="1" name="Boundary" width="36" height="24" visible="0">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -31,7 +31,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <layer id="3" name="Static_Tiles" width="36" height="24">
+ <layer id="3" name="Static_Tiles" width="36" height="24" visible="0">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -60,150 +60,143 @@
 </data>
  </layer>
  <objectgroup id="5" name="Game_Logic">
-  <object id="224" name="level_goal" x="260" y="20" width="80" height="80"/>
-  <object id="225" name="player_spawn" x="50" y="60">
+  <object id="225" name="player_spawn" x="60" y="220">
    <point/>
   </object>
-  <object id="453" name="enemy_spawn" x="640" y="290">
+  <object id="453" name="enemy_spawn" x="455" y="130">
    <point/>
   </object>
+  <object id="224" name="level_goal" x="620" y="210" width="80" height="45"/>
  </objectgroup>
  <objectgroup id="9" name="Boundary_Objects">
   <object id="208" x="700" y="0" width="20" height="480"/>
   <object id="209" x="0" y="0" width="720" height="20"/>
   <object id="210" x="0" y="460" width="720" height="20"/>
   <object id="211" x="0" y="0" width="20" height="480"/>
-  <object id="254" x="460" y="320" width="40" height="40"/>
-  <object id="259" x="460" y="20" width="20" height="220"/>
-  <object id="267" x="320" y="120" width="140" height="40"/>
-  <object id="280" x="220" y="120" width="60" height="40"/>
-  <object id="281" x="200" y="140" width="40" height="100"/>
-  <object id="283" x="190" y="370" width="20" height="110"/>
-  <object id="295" x="340" y="120" width="20" height="60"/>
-  <object id="296" x="240" y="100" width="20" height="20"/>
-  <object id="308" x="240" y="20" width="20" height="20"/>
-  <object id="315" x="25" y="80" width="5" height="5"/>
-  <object id="316" x="55" y="80" width="5" height="5"/>
-  <object id="317" x="70" y="80" width="5" height="5"/>
-  <object id="318" x="40" y="80" width="5" height="5"/>
-  <object id="332" x="20" y="140" width="125" height="25"/>
-  <object id="336" x="85" y="80" width="5" height="5"/>
-  <object id="337" x="115" y="80" width="5" height="5"/>
-  <object id="338" x="130" y="80" width="5" height="5"/>
-  <object id="339" x="100" y="80" width="5" height="5"/>
-  <object id="348" x="70" y="95" width="5" height="5"/>
-  <object id="349" x="70" y="110" width="5" height="5"/>
-  <object id="350" x="70" y="125" width="5" height="5"/>
-  <object id="353" x="130" y="95" width="5" height="5"/>
-  <object id="354" x="130" y="110" width="5" height="5"/>
-  <object id="355" x="130" y="125" width="5" height="5"/>
-  <object id="365" x="250" y="45" width="5" height="5"/>
-  <object id="366" x="250" y="60" width="5" height="5"/>
-  <object id="367" x="250" y="75" width="5" height="5"/>
-  <object id="368" x="250" y="90" width="5" height="5"/>
-  <object id="381" x="170" y="335" width="5" height="5"/>
-  <object id="382" x="200" y="335" width="5" height="5"/>
-  <object id="384" x="185" y="335" width="5" height="5"/>
-  <object id="389" x="305" y="335" width="5" height="5"/>
-  <object id="390" x="335" y="335" width="5" height="5"/>
-  <object id="391" x="395" y="335" width="5" height="5"/>
-  <object id="392" x="320" y="335" width="5" height="5"/>
-  <object id="395" x="410" y="335" width="5" height="5"/>
-  <object id="397" x="130" y="220" width="110" height="20"/>
-  <object id="403" x="480" y="100" width="40" height="40"/>
-  <object id="404" x="560" y="100" width="140" height="40"/>
-  <object id="405" x="600" y="0" width="40" height="140"/>
-  <object id="406" x="20" y="220" width="85" height="20"/>
-  <object id="407" x="50" y="330" width="110" height="10"/>
-  <object id="408" x="420" y="330" width="40" height="10"/>
-  <object id="409" x="305" y="370" width="100" height="10"/>
-  <object id="410" x="20" y="370" width="190" height="10"/>
-  <object id="411" x="220" y="375" width="5" height="5"/>
-  <object id="412" x="250" y="375" width="5" height="5"/>
-  <object id="413" x="265" y="375" width="5" height="5"/>
-  <object id="414" x="235" y="375" width="5" height="5"/>
-  <object id="415" x="280" y="375" width="5" height="5"/>
-  <object id="416" x="295" y="375" width="5" height="5"/>
-  <object id="417" x="305" y="370" width="20" height="110"/>
-  <object id="418" x="580" y="320" width="60" height="40"/>
-  <object id="420" x="360" y="140" width="20" height="60"/>
-  <object id="421" x="380" y="200" width="140" height="40"/>
-  <object id="428" x="475" y="370" width="5" height="5"/>
-  <object id="429" x="475" y="385" width="5" height="5"/>
-  <object id="430" x="475" y="400" width="5" height="5"/>
-  <object id="431" x="475" y="415" width="5" height="5"/>
-  <object id="433" x="590" y="370" width="5" height="5"/>
-  <object id="434" x="590" y="385" width="5" height="5"/>
-  <object id="435" x="590" y="400" width="5" height="5"/>
-  <object id="436" x="590" y="415" width="5" height="5"/>
-  <object id="438" x="405" y="370" width="20" height="110"/>
-  <object id="439" x="470" y="430" width="130" height="10"/>
-  <object id="440" x="670" y="320" width="30" height="40"/>
-  <object id="441" x="560" y="200" width="80" height="40"/>
-  <object id="442" x="670" y="200" width="30" height="40"/>
-  <object id="443" x="675" y="255" width="5" height="5"/>
-  <object id="444" x="675" y="270" width="5" height="5"/>
-  <object id="445" x="675" y="285" width="5" height="5"/>
-  <object id="446" x="675" y="300" width="5" height="5"/>
-  <object id="375" x="340" y="100" width="20" height="20"/>
-  <object id="376" x="340" y="20" width="20" height="20"/>
-  <object id="377" x="350" y="45" width="5" height="5"/>
-  <object id="378" x="350" y="60" width="5" height="5"/>
-  <object id="379" x="350" y="75" width="5" height="5"/>
-  <object id="380" x="350" y="90" width="5" height="5"/>
+  <object id="474" x="25" y="240" width="10" height="10"/>
+  <object id="475" x="65" y="240" width="10" height="10"/>
+  <object id="476" x="85" y="240" width="10" height="10"/>
+  <object id="477" x="45" y="240" width="10" height="10"/>
+  <object id="480" x="25" y="155" width="10" height="10"/>
+  <object id="481" x="65" y="155" width="10" height="10"/>
+  <object id="482" x="85" y="155" width="10" height="10"/>
+  <object id="483" x="45" y="155" width="10" height="10"/>
+  <object id="486" x="570" y="65" width="50" height="30"/>
+  <object id="487" x="140" y="310" width="30" height="30"/>
+  <object id="489" x="560" y="340" width="35" height="40"/>
+  <object id="490" x="275" y="360" width="30" height="35"/>
+  <object id="491" x="280" y="25" width="25" height="30"/>
+  <object id="504" x="685" y="250" width="25" height="30"/>
+  <object id="505" x="635" y="160" width="35" height="40"/>
+  <object id="506" x="470" y="340" width="50" height="30"/>
+  <object id="508" x="90" y="80" width="25" height="30"/>
+  <object id="509" x="160" y="40" width="50" height="30"/>
+  <object id="510" x="210" y="340" width="20" height="25"/>
+  <object id="511" x="10" y="420" width="35" height="40"/>
+  <object id="512" x="65" y="435" width="30" height="30"/>
+  <object id="513" x="65" y="400" width="20" height="25"/>
+  <object id="514" x="600" y="430" width="50" height="30"/>
+  <object id="515" x="660" y="370" width="35" height="40"/>
+  <object id="516" x="645" y="260" width="60" height="30"/>
+  <object id="517" x="610" y="170" width="35" height="40"/>
+  <object id="518" x="575" y="305" width="35" height="40"/>
+  <object id="519" x="510" y="355" width="50" height="30"/>
+  <object id="520" x="445" y="370" width="20" height="25"/>
+  <object id="522" x="245" y="355" width="30" height="35"/>
+  <object id="525" x="375" y="30" width="30" height="30"/>
+  <object id="526" x="480" y="50" width="50" height="30"/>
+  <object id="544" x="30" y="385" width="20" height="25"/>
+  <object id="545" x="105" y="410" width="20" height="25"/>
+  <object id="546" x="635" y="20" width="30" height="40"/>
+  <object id="547" x="670" y="70" width="35" height="40"/>
+  <object id="548" x="90" y="35" width="25" height="30"/>
+  <object id="549" x="25" y="25" width="50" height="30"/>
+  <object id="550" x="20" y="85" width="50" height="30"/>
+  <object id="551" x="655" y="165" width="35" height="40"/>
+  <object id="552" x="595" y="200" width="25" height="30"/>
+  <object id="553" x="620" y="250" width="25" height="30"/>
+  <object id="554" x="655" y="370" width="60" height="30"/>
+  <object id="555" x="690" y="405" width="20" height="25"/>
+  <object id="556" x="75" y="385" width="20" height="25"/>
+  <object id="557" x="40" y="370" width="20" height="25"/>
+  <object id="558" x="90" y="425" width="20" height="25"/>
+  <object id="559" x="25" y="70" width="20" height="25"/>
+  <object id="560" x="35" y="55" width="20" height="25"/>
+  <object id="561" x="105" y="65" width="20" height="25"/>
+  <object id="562" x="115" y="50" width="20" height="25"/>
+  <object id="563" x="55" y="115" width="20" height="25"/>
+  <object id="564" x="65" y="100" width="20" height="25"/>
+  <object id="565" x="70" y="10" width="20" height="25"/>
+  <object id="566" x="80" y="-5" width="20" height="25"/>
+  <object id="567" x="690" y="25" width="20" height="25"/>
+  <object id="568" x="660" y="15" width="20" height="25"/>
+  <object id="569" x="650" y="75" width="20" height="25"/>
+  <object id="570" x="620" y="60" width="20" height="25"/>
+  <object id="571" x="660" y="65" width="20" height="25"/>
+  <object id="572" x="685" y="55" width="20" height="25"/>
+  <object id="573" x="635" y="390" width="20" height="25"/>
+  <object id="574" x="640" y="435" width="20" height="25"/>
+  <object id="575" x="650" y="185" width="20" height="25"/>
+  <object id="576" x="635" y="200" width="20" height="25"/>
+  <object id="577" x="675" y="235" width="20" height="25"/>
+  <object id="578" x="660" y="250" width="20" height="25"/>
+  <object id="765" x="415" y="350" width="30" height="35"/>
+  <object id="766" x="385" y="365" width="30" height="35"/>
  </objectgroup>
- <objectgroup id="4" name="Objects">
-  <object id="251" name="blue_keyhole" gid="105" x="260" y="200" width="20" height="20"/>
-  <object id="252" name="blue_key" gid="103" x="530" y="65" width="20" height="20"/>
-  <object id="293" name="blue_door_straight_closed" gid="110" x="280" y="160" width="40" height="40"/>
-  <object id="400" name="orange_door_straight_open" gid="111" x="520" y="240" width="40" height="40"/>
-  <object id="401" name="orange_door_straight_open" gid="111" x="500" y="360" width="40" height="40"/>
-  <object id="402" name="orange_door_straight_open" gid="111" x="520" y="140" width="40" height="40"/>
-  <object id="419" name="orange_door_straight_open" gid="111" x="540" y="360" width="40" height="40"/>
-  <object id="447" name="orange_key" gid="104" x="645" y="445" width="20" height="20"/>
-  <object id="448" name="orange_keyhole" gid="106" x="500" y="180" width="20" height="20"/>
- </objectgroup>
+ <objectgroup id="4" name="Objects"/>
  <objectgroup color="#ff0000" id="6" name="Grating_Objects"/>
  <objectgroup id="10" name="Enemy_WP">
-  <object id="454" name="enemy_wp_0" x="480" y="285">
+  <object id="454" name="enemy_wp_0" x="505" y="270">
    <point/>
   </object>
-  <object id="455" name="enemy_wp_1" x="355" y="290">
+  <object id="455" name="enemy_wp_1" x="405" y="290">
    <point/>
   </object>
-  <object id="456" name="enemy_wp_2" x="275" y="305">
+  <object id="456" name="enemy_wp_2" x="345" y="310">
    <point/>
   </object>
-  <object id="457" name="enemy_wp_3" x="260" y="355">
+  <object id="457" name="enemy_wp_3" x="280" y="305">
    <point/>
   </object>
-  <object id="458" name="enemy_wp_4" x="220" y="300">
+  <object id="458" name="enemy_wp_4" x="235" y="240">
    <point/>
   </object>
-  <object id="459" name="enemy_wp_5" x="80" y="295">
+  <object id="459" name="enemy_wp_5" x="195" y="150">
    <point/>
   </object>
-  <object id="460" name="enemy_wp_6" x="270" y="270">
+  <object id="460" name="enemy_wp_6" x="280" y="140">
    <point/>
   </object>
-  <object id="461" name="enemy_wp_7" x="310" y="210">
+  <object id="461" name="enemy_wp_7" x="355" y="230">
    <point/>
   </object>
-  <object id="462" name="enemy_wp_8" x="380" y="290">
+  <object id="462" name="enemy_wp_8" x="395" y="160">
    <point/>
   </object>
-  <object id="463" name="enemy_wp_9" x="645" y="285">
+  <object id="463" name="enemy_wp_9" x="505" y="200">
    <point/>
   </object>
  </objectgroup>
  <objectgroup id="8" name="Sound_Sources">
-  <object id="449" name="water" x="260" y="430">
+  <object id="465" name="water_12_3000_0.5" x="660" y="245">
    <point/>
   </object>
-  <object id="451" name="sparkle" x="320" y="55">
+  <object id="466" name="water_12_6000_0.1" x="690" y="220">
    <point/>
   </object>
-  <object id="452" name="water" x="260" y="225">
+  <object id="532" name="water_12_2000_0.1" x="685" y="450">
+   <point/>
+  </object>
+  <object id="534" name="water_12_5000_0" x="55" y="450">
+   <point/>
+  </object>
+  <object id="535" name="water_12_10000_0.5" x="85" y="60">
+   <point/>
+  </object>
+  <object id="540" name="water_12_6000_0.1" x="675" y="60">
+   <point/>
+  </object>
+  <object id="542" name="water_12_3000_0.5" x="60" y="75">
    <point/>
   </object>
  </objectgroup>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="36" height="24" tilewidth="20" tileheight="20" infinite="0" nextlayerid="11" nextobjectid="196">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="36" height="24" tilewidth="20" tileheight="20" infinite="0" nextlayerid="11" nextobjectid="202">
  <tileset firstgid="1" source="../graphics/tileset/echo_escape_tileset.tsx"/>
- <tileset firstgid="101" source="../graphics/tileset/echo_escape_objects.tsx"/>
- <tileset firstgid="113" source="../graphics/tileset/echo_escape_sound_sources.tsx"/>
+ <tileset firstgid="31" source="../graphics/tileset/echo_escape_objects.tsx"/>
+ <tileset firstgid="43" source="../graphics/tileset/echo_escape_sound_sources.tsx"/>
  <layer id="1" name="Boundary" width="36" height="24">
   <data encoding="csv">
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -76,8 +76,8 @@
   <object id="194" x="200" y="180" width="20" height="300"/>
  </objectgroup>
  <objectgroup id="4" name="Objects">
-  <object id="173" name="blue_keyhole_00" gid="105" x="100" y="120" width="20" height="20"/>
-  <object id="174" name="blue_key_00" gid="103" x="100" y="40" width="20" height="20"/>
+  <object id="173" name="blue_keyhole_00" gid="35" x="100" y="120" width="20" height="20"/>
+  <object id="174" name="blue_key_00" gid="33" x="100" y="40" width="20" height="20"/>
  </objectgroup>
  <objectgroup color="#ff0000" id="6" name="Grating_Objects">
   <object id="157" x="320" y="200" width="20" height="160"/>
@@ -109,12 +109,30 @@
   <object id="187" name="enemy_wp_3" x="400" y="80">
    <point/>
   </object>
+  <object id="196" name="voices_8_1500_0.2" x="620" y="215">
+   <point/>
+  </object>
+  <object id="197" name="voices_3_500_0.6" x="665" y="250">
+   <point/>
+  </object>
+  <object id="198" name="voices_8_1500_0.4" x="615" y="260">
+   <point/>
+  </object>
+  <object id="199" name="voices_8_1500_0.5" x="650" y="290">
+   <point/>
+  </object>
+  <object id="200" name="voices_12_2000_0.5" x="565" y="230">
+   <point/>
+  </object>
+  <object id="201" name="voices_8_1300_0.3" x="570" y="275">
+   <point/>
+  </object>
  </objectgroup>
  <objectgroup id="8" name="Sound_Sources">
-  <object id="163" gid="113" x="240" y="60" width="20" height="20"/>
-  <object id="164" gid="113" x="120" y="300" width="20" height="20"/>
-  <object id="165" gid="113" x="280" y="320" width="20" height="20"/>
-  <object id="166" gid="113" x="120" y="420" width="20" height="20"/>
-  <object id="167" gid="113" x="40" y="320" width="20" height="20"/>
+  <object id="163" gid="43" x="240" y="60" width="20" height="20"/>
+  <object id="164" gid="43" x="120" y="300" width="20" height="20"/>
+  <object id="165" gid="43" x="280" y="320" width="20" height="20"/>
+  <object id="166" gid="43" x="120" y="420" width="20" height="20"/>
+  <object id="167" gid="43" x="40" y="320" width="20" height="20"/>
  </objectgroup>
 </map>

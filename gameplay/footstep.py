@@ -30,7 +30,7 @@ class Footprint(pygame.sprite.Sprite):
         self.left = left
 
         self.frame_index = 0
-        self.animation_speed = 0.03
+        self.animation_speed = 0.15
         self.frames = animation_frames
         self.image = self.frames[self.frame_index]
         self.rect = self.image.get_rect(center=pos)

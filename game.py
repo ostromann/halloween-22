@@ -37,7 +37,7 @@ class Game():
         self.dt, self.prev_time, self.cumulative_dt = 0, 0, 0
 
         # level index
-        self.level = 3
+        self.level = 0
 
         # State machine set up
         self.fsm = FSM()
@@ -50,8 +50,9 @@ class Game():
         self.load_assets()
 
         # sound
-        main_sound = pygame.mixer.Sound('assets/audio/music/main.ogg')
-        main_sound.set_volume(0)
+        main_sound = pygame.mixer.Sound(os.path.join(
+            'assets', 'audio', 'music', 'ambience.ogg'))
+        main_sound.set_volume(0.8)
         main_sound.play(loops=-1)
 
     def game_loop(self):
@@ -80,6 +81,10 @@ class Game():
                     self.actions['w'] = True
                 if event.key == pygame.K_s:
                     self.actions['s'] = True
+                if event.key == pygame.K_e:
+                    self.actions['e'] = True
+                if event.key == pygame.K_q:
+                    self.actions['q'] = True
                 if event.key == pygame.K_SPACE:
                     self.actions['SPACE'] = True
                 if event.key == pygame.K_LCTRL:
@@ -101,6 +106,10 @@ class Game():
                     self.actions['w'] = False
                 if event.key == pygame.K_s:
                     self.actions['s'] = False
+                if event.key == pygame.K_e:
+                    self.actions['e'] = False
+                if event.key == pygame.K_q:
+                    self.actions['q'] = False
                 if event.key == pygame.K_SPACE:
                     self.actions['SPACE'] = False
                 if event.key == pygame.K_LCTRL:
@@ -150,7 +159,7 @@ class Game():
         surface.blit(text_surface, text_rect)
 
     def reset_keys(self):
-        for action in ['SPACE', 'ENTER', 'TAB']:
+        for action in ['SPACE', 'ENTER', 'TAB', 'e', 'q']:
             self.actions[action] = False
 
 

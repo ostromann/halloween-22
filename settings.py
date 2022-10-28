@@ -79,28 +79,23 @@ level_data = {
             'You wake up from a nightmare',
             'Cold sweat runs down your neck',
             'A perfect darkness fills your room',
-            'With careful steps you search the light switch',
             '',
             'Press [ENTER] to continue.'
         ],
         'intro_audio': None,
         'outro_text': [
-            'You groped your way for the light switch',
-            'And hear, how the lamps light up',
-            'But still, only darkness sorrounds you',
-            'Frantically, you press the switch',
-            'Again, and again...',
-            'But no light meets your eyes'
+
         ],
         'outro_audio': None
     },
     1: {
         'intro_text': [
-            'Suddenly, you hear voices from the hall',
-            'Among the mutter, you locate a familiar sound',
-            'Yes, clearly, your dog\'s squeaking toy',
-            'You tear open the door and set foot into the hall',
-            'Only, to find it twisted and mazed.',
+            'You groped your way for the light switch',
+            'And hear, how the lamps light up',
+            'But no light meets your eyes',
+            '',
+            'Suddenly, you hear an all familiar sound from the hallway',
+            'It\'s your dog\'s squeaking toy.'
         ],
         'intro_audio': None,
         'outro_text': [
@@ -113,48 +108,54 @@ level_data = {
     },
     2: {
         'intro_text': [
-            'Your hands a searching for stability',
-            'Running them down the cold metal walls',
-            'All of a sudden a door swings open',
-            'You fall through it...'
+            'Your dog\'s bed is empty',
+            'Only the squeaking toy is left behind',
             '',
-            'And find your self in another room'
+            'All of a sudden a door swings open and you fall through',
+            'Behind you, you can hear the rumble of a mechanism',
+            'There must be a way back!'
         ],
         'intro_audio': None,
         'outro_text': [
-            'You found strange ancient artifacts with glowing symbols',
-            'Strangely, they open passages in this metal labyrinth',
-            'It doesn\'t seem to fit together'
         ],
         'outro_audio': None
-
     },
 
     3: {
         'intro_text': [
+            'These artifacts open passages in this labyrinth',
+            '',
             'With echoing steps you enter a vast space',
-            'It is metal-clad just like the passage before',
-            'Your let your fingers run along the cold walls',
-            'Providing you little sense of orientation',
-            '',
             'Soon you realize, you\'re not alone here',
-            'Heavy steps in the darkness',
-            'Each one of them sends shivers down your spine',
+            'Heavy steps in the darkness send shivers down your spine',
             '',
-            'Across the large room, you seem to hear your dog'
+            'Water drops through some cracks in the walls',
+            'These could be your way out!'
         ],
         'intro_audio': None,
         'outro_text': [],
         'outro_audio': None
-
-
     },
+    4: {
+        'intro_text': [
+            'You\'ve evaded the dreadful beast',
+            'Now you find yourself in some kind of prison',
+            'And there, from behind the bars',
+            'You can hear the familiar sounds of your dog',
+            '',
+            'But once again, there is someone else here.'
+        ],
+        'intro_audio': None,
+        'outro_text': [],
+        'outro_audio': None
+    },
+
 }
 
 # FOOTSTEP_DISTANCE = 20  # 40  # 120 for enemy?  # 40 for player
 # FOOTSTEP_VOLUME = 15
 FOOTSTEP_FADEOUT = 20
-LINE_DURATION = 5  # Debug # 1500
+LINE_DURATION = 1500  # 1500  # Debug 5 # 1500
 
 OBJECT_PULLING_RADIUS = 50
 

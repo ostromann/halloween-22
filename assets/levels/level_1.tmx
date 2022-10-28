@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="36" height="24" tilewidth="20" tileheight="20" infinite="0" nextlayerid="11" nextobjectid="250">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="36" height="24" tilewidth="20" tileheight="20" infinite="0" nextlayerid="11" nextobjectid="264">
  <tileset firstgid="1" source="../graphics/tileset/echo_escape_tileset.tsx"/>
- <tileset firstgid="101" source="../graphics/tileset/echo_escape_objects.tsx"/>
- <tileset firstgid="109" source="../graphics/tileset/echo_escape_sound_sources.tsx"/>
+ <tileset firstgid="31" source="../graphics/tileset/echo_escape_objects.tsx"/>
+ <tileset firstgid="43" source="../graphics/tileset/echo_escape_sound_sources.tsx"/>
  <layer id="1" name="Boundary" width="36" height="24">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -31,7 +31,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <layer id="3" name="Static_Tiles" width="36" height="24" visible="0">
+ <layer id="3" name="Static_Tiles" width="36" height="24">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -108,5 +108,12 @@
  <objectgroup id="4" name="Objects"/>
  <objectgroup color="#ff0000" id="6" name="Grating_Objects"/>
  <objectgroup id="10" name="Enemy_WP"/>
- <objectgroup id="8" name="Sound_Sources"/>
+ <objectgroup id="8" name="Sound_Sources">
+  <object id="262" name="toy_12_2000_0.5" x="640" y="60">
+   <point/>
+  </object>
+  <object id="263" name="toy_8_2000_0.5" x="680" y="70">
+   <point/>
+  </object>
+ </objectgroup>
 </map>

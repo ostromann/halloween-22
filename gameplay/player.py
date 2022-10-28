@@ -8,7 +8,7 @@ from settings import *
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, groups, collision_sprites, pos, trigger_spawn_footprint, trigger_spawn_soundsource):
+    def __init__(self, groups, collision_sprites, pos, trigger_spawn_footprint, trigger_spawn_soundsource, trigger_sound):
         super().__init__(groups)
 
         # movement
@@ -31,6 +31,7 @@ class Player(pygame.sprite.Sprite):
         self.left = True  # Player starts on left foot
         self.trigger_spawn_footprint = trigger_spawn_footprint
         self.trigger_spawn_soundsource = trigger_spawn_soundsource
+        self.trigger_sound = trigger_sound
 
         # Timer
         self.stomping = False
@@ -38,6 +39,8 @@ class Player(pygame.sprite.Sprite):
         self.stomp_cooldown = 300
 
     def stomp(self):
+        self.trigger_sound(
+            self.pos, player_data['stomp_volume'], f'player_stomp')
         self.trigger_spawn_soundsource(
             self.pos, player_data['stomp_volume'], 'player')
 

@@ -13,9 +13,9 @@ from gameplay.camera import YSortCameraGroup
 from gameplay.boundary import Boundary
 from gameplay.sound import SoundSource, Soundbeam
 from gameplay.player import Player
-from gameplay.objects import Key, Keyhole, Door
+from gameplay.objects import Key, Keyhole, Door, AmbientSound
 from gameplay.footstep import Footprint, FootprintPlayer
-from states.menues import LevelIntro
+from states.menues import EscapedScreen, LevelIntro
 
 from gameplay.utils import blitRotate2
 from settings import *
@@ -36,7 +36,7 @@ class GameWorld(State):
         for obj in layer:
             if obj.name == 'player_spawn':
                 self.player = Player(
-                    [self.visible_sprites, self.player_sprite], self.collision_sprites, (obj.x, obj.y), self.trigger_spawn_footprint, self.trigger_spawn_soundsource)
+                    [self.visible_sprites, self.player_sprite], self.collision_sprites, (obj.x, obj.y), self.trigger_spawn_footprint, self.trigger_spawn_soundsource, self.trigger_sound)
             if obj.name == 'enemy_spawn':
                 self.enemy = Enemy([self.visible_sprites], self.collision_sprites, self.alpha_sprites, (obj.x, obj.y), [
                 ], self.player, self.trigger_spawn_footprint, self.trigger_spawn_soundsource, self.trigger_sound)
@@ -49,15 +49,16 @@ class GameWorld(State):
             self.enemy.waypoints.append((obj.x, obj.y))
 
         for layer in tmx_data.layers:
-            # if layer.name == 'Sound_Sources':
-            #     for obj in layer:
-            #         print(f'Soundsource at {obj.x, obj.y}')
+            if layer.name == 'Sound_Sources':
+                for obj in layer:
+                    name, volume, interval, randomness = obj.name.split('_')
+                    print(name, volume, interval, randomness)
+                    AmbientSound(self.sound_sprites, name, (obj.x, obj.y), interval,
+                                 randomness, volume, self.trigger_sound)
             if layer.name == 'Objects':
                 for obj in layer:
-                    print(obj.name)
                     if obj.name.split('_')[1] == 'door':
                         color, type, rotate, closed = obj.name.split('_')
-                        print(obj.name, closed)
                         Door([self.visible_sprites, self.collision_sprites, self.door_sprites], self.visible_sprites, self.collision_sprites,
                              (obj.x, obj.y), (obj.width, obj.height), rotate, closed, color, self.trigger_sound)
                     elif obj.name.split('_')[1] == 'key':
@@ -92,7 +93,6 @@ class GameWorld(State):
         self.alpha_surf.fill((0, 0, 0, 255))
 
         # sprite group setup
-        # self.visible_sprites = YSortCameraGroup()
         self.visible_sprites = pygame.sprite.Group()
         self.alpha_sprites = pygame.sprite.Group()
         self.footprint_sprites = pygame.sprite.Group()
@@ -100,12 +100,11 @@ class GameWorld(State):
         self.collision_sprites = pygame.sprite.Group()
         self.key_sprites = pygame.sprite.Group()
         self.door_sprites = pygame.sprite.Group()
+        self.sound_sprites = pygame.sprite.Group()
 
         self.sound_player = SoundPlayer()
         self.footprint_player = FootprintPlayer()
-
         self.decay_counter = 0
-        # self.collectible_sprites = pygame.sprite.Group()
 
         # Level set up
         self.load_level(self.game.level)
@@ -135,6 +134,7 @@ class GameWorld(State):
         self.visible_sprites.update(self.game.dt, self.game.actions)
         self.footprint_sprites.update(self.game.dt, self.game.actions)
         self.alpha_sprites.update(self.game.dt, self.game.actions)
+        self.sound_sprites.update()
         self.game.reset_keys()
         self.check_death()
         self.check_level_goal()
@@ -155,7 +155,7 @@ class GameWorld(State):
         for sprite in self.alpha_sprites:
             self.alpha_surf.blit(
                 sprite.image, sprite.rect.topleft, special_flags=pygame.BLEND_RGBA_SUB)
-            pygame.draw.rect(self.visible_surf, (255, 0, 0), sprite.rect, 1)
+            # pygame.draw.rect(self.visible_surf, (255, 0, 0), sprite.rect, 1)
 
         # Fade outs
         self.decay_counter += self.game.dt
@@ -165,8 +165,8 @@ class GameWorld(State):
             self.alpha_surf.blit(self.decay_surf, (0, 0),
                                  special_flags=pygame.BLEND_RGBA_ADD)
             # Fade out footprints
-            # self.footprint_surf.blit(self.decay_surf, (0, 0),
-            #                          special_flags=pygame.BLEND_RGBA_SUB)
+            self.footprint_surf.blit(self.decay_surf, (0, 0),
+                                     special_flags=pygame.BLEND_RGBA_SUB)
 
         self.display_surface.blit(self.visible_surf, (0, 0))
         self.display_surface.blit(self.alpha_surf, (0, 0))
@@ -209,17 +209,18 @@ class GameWorld(State):
     def check_death(self):
         if hasattr(self, 'enemy'):
             if self.player.hitbox.colliderect(self.enemy.hitbox):
-                print('death encountered')
                 self.game.fsm.register(
                     'run-through', GameWorld(self.game, blocks_update=True))
-                print('new game world registered')
                 self.game.fsm.switch('death')
-                print('switch to death registered')
-                print(self.game.fsm.state_stack)
 
     def check_level_goal(self):
         if self.player.hitbox.colliderect(self.level_goal.rect):
             self.game.level += 1
-            self.game.fsm.register(
-                'run-through', GameWorld(self.game, blocks_update=True))
-            self.game.fsm.switch('run-through')
+            if self.game.level <= 4:
+                self.game.fsm.register(
+                    'run-through', GameWorld(self.game, blocks_update=True))
+                self.game.fsm.switch('run-through')
+            else:
+                self.game.fsm.register('escaped', EscapedScreen(
+                    self.game, blocks_update=True))
+                self.game.fsm.switch('escaped')

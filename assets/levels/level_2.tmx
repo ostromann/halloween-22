@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="36" height="24" tilewidth="20" tileheight="20" infinite="0" nextlayerid="11" nextobjectid="294">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="36" height="24" tilewidth="20" tileheight="20" infinite="0" nextlayerid="11" nextobjectid="295">
  <tileset firstgid="1" source="../graphics/tileset/echo_escape_tileset.tsx"/>
- <tileset firstgid="101" source="../graphics/tileset/echo_escape_objects.tsx"/>
- <tileset firstgid="111" source="../graphics/tileset/echo_escape_sound_sources.tsx"/>
+ <tileset firstgid="31" source="../graphics/tileset/echo_escape_objects.tsx"/>
+ <tileset firstgid="43" source="../graphics/tileset/echo_escape_sound_sources.tsx"/>
  <layer id="1" name="Boundary" width="36" height="24">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -100,13 +100,17 @@
   <object id="290" x="530" y="200" width="10" height="10"/>
  </objectgroup>
  <objectgroup id="4" name="Objects">
-  <object id="251" name="blue_keyhole" gid="105" x="500" y="160" width="20" height="20"/>
-  <object id="252" name="blue_key" gid="103" x="340" y="170" width="20" height="20"/>
-  <object id="291" name="blue_door_rotate_closed" gid="109" x="440" y="100" width="40" height="40"/>
-  <object id="292" name="blue_door_rotate_closed" gid="109" x="280" y="140" width="40" height="40"/>
-  <object id="293" name="blue_door_straight_closed" gid="110" x="200" y="220" width="40" height="40"/>
+  <object id="251" name="blue_keyhole" gid="35" x="500" y="160" width="20" height="20"/>
+  <object id="252" name="blue_key" gid="33" x="340" y="170" width="20" height="20"/>
+  <object id="291" name="blue_door_rotate_closed" gid="39" x="440" y="100" width="40" height="40"/>
+  <object id="292" name="blue_door_rotate_closed" gid="39" x="280" y="140" width="40" height="40"/>
+  <object id="293" name="blue_door_straight_closed" gid="40" x="200" y="220" width="40" height="40"/>
  </objectgroup>
  <objectgroup color="#ff0000" id="6" name="Grating_Objects"/>
  <objectgroup id="10" name="Enemy_WP"/>
- <objectgroup id="8" name="Sound_Sources"/>
+ <objectgroup id="8" name="Sound_Sources">
+  <object id="294" name="mechanism_12_6000_0.2" x="220" y="255">
+   <point/>
+  </object>
+ </objectgroup>
 </map>

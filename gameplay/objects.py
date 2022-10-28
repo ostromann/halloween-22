@@ -1,11 +1,40 @@
 import os
-from winreg import REG_OPTION_CREATE_LINK
 import pygame
 from gameplay.boundary import Boundary
 from gameplay.sound import SoundSource, Soundbeam
+from random import random, choice, randint
 
 from gameplay.utils import *
 from settings import *
+
+
+class AmbientSound(pygame.sprite.Sprite):
+    def __init__(self, groups, name, pos, interval, randomness, volume, trigger_sound):
+        super().__init__(groups)
+        self.name = name
+        self.pos = pos
+        self.interval = int(interval)
+        self.randomness = float(randomness)
+        self.volume = int(volume)
+        self.start_time = pygame.time.get_ticks() - randint(-5000, 3000)
+        self.last_played = pygame.time.get_ticks()
+        self.play = choice([True, False, False, False])
+        self.trigger_sound = trigger_sound
+
+    def cooldown(self):
+        current_time = pygame.time.get_ticks()
+        print(current_time, self.last_played, self.interval)
+
+        if not self.play:
+            if current_time - self.last_played >= self.interval * (1 + choice([-1, 1]) * random() * self.randomness):
+                self.play = True
+
+    def update(self):
+        self.cooldown()
+        if self.play:
+            self.trigger_sound(self.pos, self.volume, self.name)
+            self.last_played = pygame.time.get_ticks()
+            self.play = False
 
 
 class Key(pygame.sprite.Sprite):
@@ -146,7 +175,7 @@ class Door(pygame.sprite.Sprite):
         self.color = color
         self.pos = pos
         self.trigger_toggle_sound = trigger_toggle_sound
-        self.rotate = REG_OPTION_CREATE_LINK
+        self.rotate = rotate
 
         # TODO: Fix rotation!
         if rotate == 'rotate':

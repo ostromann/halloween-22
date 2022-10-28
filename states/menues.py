@@ -75,6 +75,45 @@ class PauseMenu(State):
             self.menu_surf, (self.game.GAME_W * 0.25, self.game.GAME_H * 0.25))
 
 
+class EscapedScreen(State):
+    def __init__(self, game, blocks_update=None, blocks_render=None):
+        super().__init__(game, blocks_update, blocks_render)
+
+    def startup(self):
+        # get the items from the MainMenu
+        pass
+
+    def suspense(self):
+        # basically do nothing
+        pass
+
+    def wakeup(self):
+        # set back pointer to first item
+        pass
+
+    def cleanup(self):
+        # basically do nothing
+        pass
+
+    def update(self):
+        print('updating death screen')
+        print(self.game.fsm.state_stack)
+        if self.game.actions['ENTER']:
+            self.game.level = 0
+            self.game.fsm.switch('run-through')
+        self.game.reset_keys()
+
+    def render(self):
+        self.game.game_canvas.fill((0, 0, 0))
+        self.game.draw_text(self.game.game_canvas, "you escaped", 'title',
+                            (255, 255, 255), self.game.GAME_W/2, self.game.GAME_H/5*2)
+
+        self.game.draw_text(self.game.game_canvas, "Together with your dog", 'main',
+                            (255, 255, 255), self.game.GAME_W/2, 3*self.game.GAME_H/4)
+        self.game.draw_text(self.game.game_canvas, "Press [ENTER] to wake up", 'main',
+                            (255, 255, 255), self.game.GAME_W/2, 3*self.game.GAME_H/4 + 40)
+
+
 class DeathScreen(State):
     def __init__(self, game, blocks_update=None, blocks_render=None):
         super().__init__(game, blocks_update, blocks_render)
@@ -144,6 +183,55 @@ class LevelIntro(State):
     def render(self):
         self.game.game_canvas.fill((0, 0, 0))
         text = level_data[self.game.level]['intro_text']
+
+        start_height = self.game.GAME_H/4
+        row_offset = 40
+
+        current_time = pygame.time.get_ticks()
+        if current_time - self.line_start_time >= LINE_DURATION:
+            self.line_start_time = pygame.time.get_ticks()
+            self.print_line_index += 1
+
+        if self.print_line_index < len(text):
+            for i, line in enumerate(text[:self.print_line_index]):
+                self.game.draw_text(self.game.game_canvas, line, 'main',
+                                    (255, 255, 255), self.game.GAME_W/2, start_height + i * row_offset)
+        else:
+            self.all_lines_printed = True
+
+
+class LevelOutro(State):
+    def __init__(self, game, blocks_update=None, blocks_render=None):
+        super().__init__(game, blocks_update, blocks_render)
+
+    def startup(self):
+        self.line_start_time = pygame.time.get_ticks()
+        self.print_line_index = 1
+        self.all_lines_printed = False
+        # get the items from the MainMenu
+        pass
+
+    def suspense(self):
+        # basically do nothing
+        pass
+
+    def wakeup(self):
+        # set back pointer to first item
+        pass
+
+    def cleanup(self):
+        # basically do nothing
+        pass
+
+    def update(self):
+        if self.all_lines_printed:
+            if self.game.actions['ENTER']:
+                self.game.fsm.pop()
+        self.game.reset_keys()
+
+    def render(self):
+        self.game.game_canvas.fill((0, 0, 0))
+        text = level_data[self.game.level]['outro_text']
 
         start_height = self.game.GAME_H/4
         row_offset = 40
