@@ -1,16 +1,6 @@
-from csv import reader
 from os import walk
 import os
 import pygame
-
-
-# def import_csv_layout(path):
-# 	terrain_map = []
-# 	with open(path) as level_map:
-# 		layout = reader(level_map, delimiter=',')
-# 		for row in layout:
-# 			terrain_map.append(list(row))
-# 		return terrain_map
 
 
 def import_image_folder(path):
@@ -23,8 +13,6 @@ def import_image_folder(path):
 
     return surface_list
 
-
-# def surf_rotate()
 
 def import_audio_folder(path):
     sound_list = []
@@ -43,7 +31,6 @@ def blitRotate2(surf, image, topleft, angle):
         center=image.get_rect(topleft=topleft).center)
 
     surf.blit(rotated_image, new_rect.topleft)
-    # pygame.draw.rect(surf, (255, 0, 0), new_rect, 2)
 
 
 def get_distance_direction_a_to_b(a, b):
@@ -71,15 +58,3 @@ def key_with_maxval(d):
 
 def filter_dict_by_keys(d, keys):
     return {k: d[k] for k in keys}
-
-# def get_closest_sprite_of_group(sprite, group):
-#     '''
-#     Get the closest sprite from a group of sprites
-#     '''
-#     dist_sprites = []  # list of distances and sprites
-#     for other_sprite in group:
-#         distance, _ = get_distance_direction_a_to_b(
-#             sprite.pos, other_sprite.pos)
-#         dist_sprites.append((distance, other_sprite))
-
-#     return sorted(dist_sprites, key=lambda x: x[0])[0][1]

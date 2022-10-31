@@ -124,7 +124,6 @@ class Game():
     def load_assets(self):
         # Create pointers to directories
         self.assets_dir = os.path.join("assets")
-        # self.sprite_dir = os.path.join(self.assets_dir, "sprites")
         self.font_dir = os.path.join(self.assets_dir, "fonts")
         self.title_font = pygame.font.Font(os.path.join(
             self.font_dir, "BLACKOUT.TTF"), 140)
@@ -136,8 +135,6 @@ class Game():
 
     def render(self):
         self.fsm.render()
-        # self.state_stack[-1].render()
-        # TODO: Scaling the final screen
         self.screen.blit(pygame.transform.scale(
             self.game_canvas, (self.SCREEN_WIDTH, self.SCREEN_HEIGHT)), (0, 0))
         pygame.display.flip()
@@ -148,7 +145,6 @@ class Game():
         self.prev_time = now
 
     def draw_text(self, surface, text, font_type, color, x, y):
-
         if font_type == 'title':
             font = self.title_font
         elif font_type == 'main':

@@ -1,7 +1,7 @@
 # Debug Settings
 ENEMY_DEBUG = False
 PLAYER_DEBUG = False
-FPS_DEBUG = True
+FPS_DEBUG = False
 
 # game setup
 WIDTH = 720  # 480  # 720
@@ -15,7 +15,7 @@ TILESIZE = 20
 WALL_WIDTH = 20
 
 player_data = {
-    'stomp_volume': 30,
+    'stomp_volume': 40,
     'movement': {
         'idle': {
             'speed': 0,
@@ -77,9 +77,10 @@ level_data = {
     0: {
         'intro_text': [
             'You wake up from a nightmare',
-            'Cold sweat runs down your neck',
+            'Soaked in cold sweat',
             'A perfect darkness fills your room',
-            '',
+            '...',
+            'Hold [W,A,S,D] to move.',
             'Press [ENTER] to continue.'
         ],
         'intro_audio': None,
@@ -90,19 +91,17 @@ level_data = {
     },
     1: {
         'intro_text': [
-            'You groped your way for the light switch',
-            'And hear, how the lamps light up',
-            'But no light meets your eyes',
-            '',
-            'Suddenly, you hear an all familiar sound from the hallway',
-            'It\'s your dog\'s squeaking toy.'
+            'You reach the light switch and flick it',
+            'But still, all you see is darkness',
+            '...',
+            'You hear an all familiar sound from the hallway',
+            'It\'s your dog\'s squeaking toy.',
+            '...',
+            'Press [SPACE] to stomp',
+            'Hold [LSHIFT] to run',
         ],
         'intro_audio': None,
         'outro_text': [
-            'You are past the strange hallway',
-            'There, you find your dog\'s empty bed',
-            'Your hands still feel the warmth of it',
-            'But you only find the squeaking toy in it.'
         ],
         'outro_audio': None
     },
@@ -110,10 +109,13 @@ level_data = {
         'intro_text': [
             'Your dog\'s bed is empty',
             'Only the squeaking toy is left behind',
-            '',
-            'All of a sudden a door swings open and you fall through',
-            'Behind you, you can hear the rumble of a mechanism',
-            'There must be a way back!'
+            '...',
+            'A trapdoor swings open and you fall through',
+            'You can hear the rumble of a mechanism',
+            'There must be a way back!',
+            '...',
+            'Press [E] to pull an object.',
+            'Press [E] again to let loose.',
         ],
         'intro_audio': None,
         'outro_text': [
@@ -123,14 +125,14 @@ level_data = {
 
     3: {
         'intro_text': [
-            'These artifacts open passages in this labyrinth',
-            '',
-            'With echoing steps you enter a vast space',
-            'Soon you realize, you\'re not alone here',
-            'Heavy steps in the darkness send shivers down your spine',
-            '',
+            'You enter a vast space',
+            'Soon you realize, you\'re not alone',
+            'Heavy steps echo in the darkness',
+            '...',
             'Water drops through some cracks in the walls',
-            'These could be your way out!'
+            'These could be your way out!',
+            '...',
+            'Hold [LCTRL] to sneak',
         ],
         'intro_audio': None,
         'outro_text': [],
@@ -140,9 +142,10 @@ level_data = {
         'intro_text': [
             'You\'ve evaded the dreadful beast',
             'Now you find yourself in some kind of prison',
+            '...',
             'And there, from behind the bars',
-            'You can hear the familiar sounds of your dog',
-            '',
+            'You can hear your dog barking',
+            '...',
             'But once again, there is someone else here.'
         ],
         'intro_audio': None,
@@ -170,7 +173,7 @@ SOUNDBEAM_MAX_SIZE_GAIN = 1
 SOUNDBEAM_NUMBERS = 256
 SOUNDBEAM_SPEED = 2
 SOUNDBEAM_ATTENUATION = 20
-SOUNDBEAM_MAX_LOUDNESS = 30
+SOUNDBEAM_MAX_LOUDNESS = 40
 SOUNDBEAM_DIFFRACTION_FACTOR = 0
 
 

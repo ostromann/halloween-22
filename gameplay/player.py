@@ -1,8 +1,6 @@
 import pygame
 from random import random
-from gameplay.entity import Entity
-from gameplay.sound import SoundSource
-from gameplay.footstep import Footprint
+
 from gameplay.utils import *
 from settings import *
 
@@ -13,8 +11,8 @@ class Player(pygame.sprite.Sprite):
 
         # movement
         # topleft because this pos comes from the 64 64 gridworld in tiled
-        self.image = pygame.Surface((18, 18))
-        self.image.fill((0, 0, 0, 0))
+        self.image = pygame.Surface((18, 18), pygame.SRCALPHA)
+        # self.image.fill((0, 0, 0, 0))
         self.rect = self.image.get_rect(topleft=pos)
         self.pos = pygame.math.Vector2(self.rect.center)
         self.direction = pygame.math.Vector2()

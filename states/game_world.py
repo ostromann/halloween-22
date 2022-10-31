@@ -1,20 +1,18 @@
 
 import os
 import pygame
-from random import choice, randint
 from debug import debug
 from pytmx.util_pygame import load_pygame
 
 from gameplay.enemy import Enemy
 from gameplay.soundplayer import SoundPlayer
-from gameplay.tile import Tile, LevelGoal
-from states.state import State, FSM
-from gameplay.camera import YSortCameraGroup
+from gameplay.tile import LevelGoal
+from states.state import State
 from gameplay.boundary import Boundary
-from gameplay.sound import SoundSource, Soundbeam
+from gameplay.sound import SoundSource
 from gameplay.player import Player
 from gameplay.objects import Key, Keyhole, Door, AmbientSound
-from gameplay.footstep import Footprint, FootprintPlayer
+from gameplay.footstep import FootprintPlayer
 from states.menues import EscapedScreen, LevelIntro
 
 from gameplay.utils import blitRotate2
@@ -36,7 +34,7 @@ class GameWorld(State):
         for obj in layer:
             if obj.name == 'player_spawn':
                 self.player = Player(
-                    [self.visible_sprites, self.player_sprite], self.collision_sprites, (obj.x, obj.y), self.trigger_spawn_footprint, self.trigger_spawn_soundsource, self.trigger_sound)
+                    [self.visible_sprites], self.collision_sprites, (obj.x, obj.y), self.trigger_spawn_footprint, self.trigger_spawn_soundsource, self.trigger_sound)
             if obj.name == 'enemy_spawn':
                 self.enemy = Enemy([self.visible_sprites], self.collision_sprites, self.alpha_sprites, (obj.x, obj.y), [
                 ], self.player, self.trigger_spawn_footprint, self.trigger_spawn_soundsource, self.trigger_sound)
@@ -96,7 +94,6 @@ class GameWorld(State):
         self.visible_sprites = pygame.sprite.Group()
         self.alpha_sprites = pygame.sprite.Group()
         self.footprint_sprites = pygame.sprite.Group()
-        self.player_sprite = pygame.sprite.Group()
         self.collision_sprites = pygame.sprite.Group()
         self.key_sprites = pygame.sprite.Group()
         self.door_sprites = pygame.sprite.Group()

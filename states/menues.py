@@ -192,7 +192,7 @@ class LevelIntro(State):
             self.line_start_time = pygame.time.get_ticks()
             self.print_line_index += 1
 
-        if self.print_line_index < len(text):
+        if self.print_line_index < len(text)+1:
             for i, line in enumerate(text[:self.print_line_index]):
                 self.game.draw_text(self.game.game_canvas, line, 'main',
                                     (255, 255, 255), self.game.GAME_W/2, start_height + i * row_offset)

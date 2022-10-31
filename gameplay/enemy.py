@@ -60,7 +60,7 @@ class IdleState(EnemyTimedState):
 
         self.make_noise = not randint(0, 5)
         if self.make_noise:
-            self.sprite.make_noise('enemy_low_call')
+            self.sprite.make_noise('enemy_idle')
 
     def update(self, dt, actions):
         self.check_expiration()
@@ -87,7 +87,6 @@ class WalkState(EnemyState):
             print(f'walk to {self.sprite.target_pos}')
 
     def cleanup(self):
-        # spawn a last footrpint
         self.sprite.spawn_footprint()
 
     def update(self, dt, actions):
@@ -217,6 +216,8 @@ class RoarState(EnemyTimedState):
         self.sprite.target_pos = self.sprite.pos
         # TODO: trigger sound roar
 
+        self.sprite.make_noise('enemy_roar')
+
     def update(self, dt, actions):
         self.check_expiration()
         if ENEMY_DEBUG:
@@ -240,6 +241,8 @@ class AttackState(EnemyTimedState):
         if ENEMY_DEBUG:
             print(f'walk to {self.sprite.target_pos}')
         self.sprite.movement = enemy_data['movement']['run']
+
+        self.sprite.make_noise('enemy_attack')
 
     def update(self, dt, actions):
         self.check_done()
@@ -268,12 +271,7 @@ class Enemy(pygame.sprite.Sprite):
         # general setup
         super().__init__(groups)
 
-        self.frame_index = 0
-        self.animation_speed = 0.03
-        self.frames = self.import_graphics()
-
         self.image = pygame.Surface((30, 30), pygame.SRCALPHA)
-        self.image.fill((255, 0, 0, 0))
         self.rect = self.image.get_rect(topleft=pos)
         self.pos = pygame.math.Vector2(self.rect.center)
         self.hitbox = self.rect
@@ -307,10 +305,6 @@ class Enemy(pygame.sprite.Sprite):
             self, randint(*enemy_data['idle_duration_range'])))
         self.entity_fsm.register('walk', WalkState(self))
         self.entity_fsm.push('default')
-
-    def import_graphics(self):
-        self.animations = import_image_folder(
-            os.path.join('assets', 'graphics', 'enemy'))
 
     def get_next_waypoint(self):
         self.waypoint_index += 1
@@ -361,7 +355,7 @@ class Enemy(pygame.sprite.Sprite):
                     self.rect.centery = round(self.pos.y)
 
     def make_noise(self, noise):
-        self.trigger_sound(self.pos, 8, f'enemy_low_call')
+        self.trigger_sound(self.pos, 8, noise)
         self.trigger_spawn_soundsource(self.pos, 8, 'enemy')
 
     def spawn_footprint(self):
@@ -403,26 +397,8 @@ class Enemy(pygame.sprite.Sprite):
             self.noise_meter[key]['volume'] = max(
                 [0, val['volume'] - enemy_data['noise_decay'] * dt])
 
-    def animate(self, dt):
-
-        # loop over the frame_index
-        self.frame_index += self.animation_speed * dt * 60
-        self.frame_index %= len(self.animations)
-
-        # set the image
-        self.image = self.animations[int(self.frame_index)]
-        self.rect = self.image.get_rect(center=self.rect.center)
-
-        # # squash & stretch
-        # if self.bouncy:
-        #     stretch = sin(pygame.time.get_ticks() /
-        #                   STRETCH_FREQUENCY) * STRETCH_SIZE
-        #     self.rect = self.rect.inflate(x_stretch, y_stretch)
-        #     self.image = pygame.transform.scale(self.image, self.rect.size)
-
     def update(self, dt, actions):
         self.entity_fsm.execute(dt, actions)
         self.move(dt)
         self.update_noise_meter()
         self.decay_noise_meter(dt)
-        self.animate(dt)

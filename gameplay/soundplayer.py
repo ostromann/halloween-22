@@ -16,8 +16,11 @@ class SoundPlayer:
             'player_metal': import_audio_folder(os.path.join(base_path, 'player', 'metal')),
             'player_stomp': [pygame.mixer.Sound(os.path.join(base_path, 'player', 'player_stomp.wav'))],
             'enemy_metal': import_audio_folder(os.path.join(base_path, 'enemy', 'metal')),
-            'enemy_low_call': import_audio_folder(os.path.join(base_path, 'enemy', 'enemy_idle')),
+            'enemy_idle': import_audio_folder(os.path.join(base_path, 'enemy', 'enemy_idle')),
+            'enemy_roar': [pygame.mixer.Sound(os.path.join(base_path, 'enemy', 'enemy_roar.wav'))],
+            'enemy_attack': [pygame.mixer.Sound(os.path.join(base_path, 'enemy', 'enemy_attack.wav'))],
             # 'enemy_footstep': [pygame.mixer.Sound(os.path.join('assets', 'audio', 'sfx', 'hit.wav'))],
+            'voices': import_audio_folder(os.path.join(base_path, 'objects', 'voices')),
 
             # stomp
 
