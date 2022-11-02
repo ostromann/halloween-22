@@ -48,6 +48,19 @@ def get_distance_direction_a_to_b(a, b):
     return (distance, direction)
 
 
+def get_closest_sprite_of_group(sprite, group):
+    '''
+    Get the closest sprite from a group of sprites
+    '''
+    dist_sprites = []  # list of distances and sprites
+    for other_sprite in group:
+        distance, _ = get_distance_direction_a_to_b(
+            sprite.pos, other_sprite.pos)
+        dist_sprites.append((distance, other_sprite))
+
+    return sorted(dist_sprites, key=lambda x: x[0])[0][1]
+
+
 def key_with_maxval(d):
     """ a) create a list of the dict's keys and values; 
         b) return the key with the max value"""

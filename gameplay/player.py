@@ -6,7 +6,7 @@ from settings import *
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, groups, collision_sprites, pos, trigger_spawn_footprint, trigger_spawn_soundsource, trigger_sound):
+    def __init__(self, groups, collision_sprites, pos, trigger_spawn_footprint, trigger_spawn_soundsource, trigger_sound, pickup_item):
         super().__init__(groups)
 
         # movement
@@ -31,16 +31,23 @@ class Player(pygame.sprite.Sprite):
         self.trigger_spawn_soundsource = trigger_spawn_soundsource
         self.trigger_sound = trigger_sound
 
+        # self.is_pulling = False  # Player pulls an object
+        self.pickup_item = pickup_item
+        self.carried_item = None
+
         # Timer
         self.stomping = False
         self.stomp_time = None
         self.stomp_cooldown = 300
 
     def stomp(self):
-        self.trigger_sound(
-            self.pos, player_data['stomp_volume'], f'player_stomp')
-        self.trigger_spawn_soundsource(
-            self.pos, player_data['stomp_volume'], 'player')
+        pos_offset = self.direction * 5
+        self.trigger_spawn_footprint(
+            self.pos+pos_offset, self.last_direction, player_data['stomp_volume'], self.left, 'player')
+        self.left = not self.left
+        self.trigger_spawn_footprint(
+            self.pos+pos_offset, self.last_direction, player_data['stomp_volume'], self.left, 'player')
+        self.left = not self.left
 
     def cooldowns(self):
         current_time = pygame.time.get_ticks()
@@ -71,7 +78,12 @@ class Player(pygame.sprite.Sprite):
                 self.stomp()
                 self.stomping = True
                 self.stomp_time = pygame.time.get_ticks()
-        # print(self.status)
+
+        if actions['e']:
+            if self.carried_item:
+                self.carried_item = None
+            else:
+                self.carried_item = self.pickup_item()
 
     def move(self, dt):
         self.pos += self.direction * \
@@ -116,7 +128,15 @@ class Player(pygame.sprite.Sprite):
                     self.hitbox.centery = round(self.pos.y)
                     self.rect.centery = round(self.pos.y)
 
+    def pull_item(self):
+        if self.carried_item:
+            self.carried_item.pos = pygame.Vector2(self.pos)
+            self.carried_item.hitbox.centerx = round(self.carried_item.pos.x)
+            self.carried_item.hitbox.centery = round(self.carried_item.pos.y)
+            self.carried_item.rect = self.carried_item.hitbox
+
     def update(self, dt, actions):
         self.cooldowns()
         self.input(actions)
         self.move(dt)
+        self.pull_item()

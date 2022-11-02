@@ -43,22 +43,18 @@ class PauseMenu(State):
         super().__init__(game, blocks_update, blocks_render)
 
     def startup(self):
-        print('PauseMenu startup')
         self.menu_surf = pygame.Surface(
             (self.game.GAME_W * 0.5, self.game.GAME_H * 0.5))
 
     def suspense(self):
-        print('PauseMenu suspend')
         # basically do nothing
         pass
 
     def wakeup(self):
-        print('PauseMenu wakeup')
         # set back pointer to first item
         pass
 
     def cleanup(self):
-        print('PauseMenu clean up')
         # basically do nothing
         pass
 
@@ -96,8 +92,6 @@ class EscapedScreen(State):
         pass
 
     def update(self):
-        print('updating death screen')
-        print(self.game.fsm.state_stack)
         if self.game.actions['ENTER']:
             self.game.level = 0
             self.game.fsm.switch('run-through')
@@ -119,7 +113,6 @@ class DeathScreen(State):
         super().__init__(game, blocks_update, blocks_render)
 
     def startup(self):
-        print('now in  death screen')
         # get the items from the MainMenu
         pass
 
@@ -136,8 +129,6 @@ class DeathScreen(State):
         pass
 
     def update(self):
-        print('updating death screen')
-        print(self.game.fsm.state_stack)
         if self.game.actions['ENTER']:
             self.game.fsm.switch('run-through')
         self.game.reset_keys()
@@ -181,7 +172,7 @@ class LevelIntro(State):
         self.game.reset_keys()
 
     def render(self):
-        self.game.game_canvas.fill((0, 0, 0))
+
         text = level_data[self.game.level]['intro_text']
 
         start_height = self.game.GAME_H/4
@@ -190,14 +181,15 @@ class LevelIntro(State):
         current_time = pygame.time.get_ticks()
         if current_time - self.line_start_time >= LINE_DURATION:
             self.line_start_time = pygame.time.get_ticks()
-            self.print_line_index += 1
+            if self.print_line_index < len(text)+1:
+                self.print_line_index += 1
+            else:
+                self.all_lines_printed = True
 
-        if self.print_line_index < len(text)+1:
-            for i, line in enumerate(text[:self.print_line_index]):
-                self.game.draw_text(self.game.game_canvas, line, 'main',
-                                    (255, 255, 255), self.game.GAME_W/2, start_height + i * row_offset)
-        else:
-            self.all_lines_printed = True
+        self.game.game_canvas.fill((0, 0, 0))
+        for i, line in enumerate(text[:self.print_line_index]):
+            self.game.draw_text(self.game.game_canvas, line, 'main',
+                                (255, 255, 255), self.game.GAME_W/2, start_height + i * row_offset)
 
 
 class LevelOutro(State):

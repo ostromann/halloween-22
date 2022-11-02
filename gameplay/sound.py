@@ -1,5 +1,4 @@
 import pygame
-import pymunk
 from math import sin, cos, pi
 from random import choice, random
 
@@ -72,31 +71,10 @@ class Soundbeam(pygame.sprite.Sprite):
                     self.pos.x += self.rect.width  # set outside of sprite
                     self.direction.x *= -1
 
-                # if self.direction.x > 0:
-                #     if abs(self.rect.right - sprite.rect.left) < SOUNDBEAM_COLLISION_TOLERANCE:
-                #         self.pos.x -= self.rect.width
-                #         self.direction.x *= -1
-                # elif self.direction.x < 0:
-                #     if self.rect.left <= sprite.rect.right:
-                #         self.pos.x += self.rect.width
-                #         self.direction.x *= -1
-                # self.rect.centerx = round(self.pos.x)
-
-                # if self.direction.y > 0:
-                #     if self.rect.bottom >= sprite.rect.top:
-                #         self.pos.y -= self.rect.height
-                #         self.direction.y *= -1
-                # elif self.direction.y < 0:
-                #     if self.rect.top <= sprite.rect.bottom:
-                #         self.pos.y += self.rect.height
-                #         self.direction.y *= -1
-                # self.rect.centery = round(self.pos.y)
-
     def animate(self, dt):
         self.surf = pygame.Surface(self.rect.size, pygame.SRCALPHA)
         bright = self.volume / SOUNDBEAM_MAX_LOUDNESS * 255
         self.surf.fill((bright, bright, bright, bright))
-        # self.surf.set_alpha(bright)
         self.image = self.surf
 
     def update(self, dt, actions):

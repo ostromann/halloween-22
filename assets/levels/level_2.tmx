@@ -61,7 +61,7 @@
  </layer>
  <objectgroup id="5" name="Game_Logic">
   <object id="224" name="level_goal" x="180" y="220" width="80" height="80"/>
-  <object id="225" name="player_spawn" x="210" y="120">
+  <object id="225" name="player_spawn" x="225" y="145">
    <point/>
   </object>
  </objectgroup>
@@ -70,17 +70,17 @@
   <object id="209" x="0" y="0" width="720" height="20"/>
   <object id="210" x="0" y="460" width="720" height="20"/>
   <object id="211" x="100" y="0" width="20" height="480"/>
-  <object id="254" x="440" y="0" width="40" height="60"/>
-  <object id="255" x="440" y="100" width="40" height="20"/>
+  <object id="254" x="440" y="0" width="40" height="65"/>
+  <object id="255" x="440" y="95" width="40" height="25"/>
   <object id="258" x="300" y="60" width="75" height="20"/>
-  <object id="259" x="280" y="140" width="40" height="80"/>
+  <object id="259" x="280" y="135" width="40" height="85"/>
   <object id="260" x="160" y="60" width="10" height="10"/>
   <object id="261" x="200" y="60" width="10" height="10"/>
   <object id="262" x="220" y="60" width="10" height="10"/>
   <object id="263" x="180" y="60" width="10" height="10"/>
   <object id="264" x="260" y="60" width="10" height="10"/>
   <object id="266" x="240" y="60" width="10" height="10"/>
-  <object id="267" x="100" y="180" width="100" height="40"/>
+  <object id="267" x="100" y="180" width="105" height="40"/>
   <object id="268" x="440" y="120" width="10" height="10"/>
   <object id="269" x="440" y="160" width="10" height="10"/>
   <object id="270" x="440" y="180" width="10" height="10"/>
@@ -91,8 +91,8 @@
   <object id="275" x="360" y="250" width="160" height="20"/>
   <object id="276" x="260" y="200" width="20" height="120"/>
   <object id="279" x="100" y="300" width="500" height="20"/>
-  <object id="280" x="240" y="180" width="60" height="40"/>
-  <object id="281" x="280" y="60" width="40" height="40"/>
+  <object id="280" x="235" y="180" width="65" height="40"/>
+  <object id="281" x="280" y="60" width="40" height="45"/>
   <object id="283" x="160" y="200" width="20" height="120"/>
   <object id="287" x="510" y="200" width="10" height="10"/>
   <object id="288" x="550" y="200" width="10" height="10"/>

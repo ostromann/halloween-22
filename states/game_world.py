@@ -15,7 +15,7 @@ from gameplay.objects import Key, Keyhole, Door, AmbientSound
 from gameplay.footstep import FootprintPlayer
 from states.menues import EscapedScreen, LevelIntro
 
-from gameplay.utils import blitRotate2
+from gameplay.utils import blitRotate2, get_closest_sprite_of_group, get_distance_direction_a_to_b
 from settings import *
 
 
@@ -34,7 +34,7 @@ class GameWorld(State):
         for obj in layer:
             if obj.name == 'player_spawn':
                 self.player = Player(
-                    [self.visible_sprites], self.collision_sprites, (obj.x, obj.y), self.trigger_spawn_footprint, self.trigger_spawn_soundsource, self.trigger_sound)
+                    [self.visible_sprites], self.collision_sprites, (obj.x, obj.y), self.trigger_spawn_footprint, self.trigger_spawn_soundsource, self.trigger_sound, self.pickup_item)
             if obj.name == 'enemy_spawn':
                 self.enemy = Enemy([self.visible_sprites], self.collision_sprites, self.alpha_sprites, (obj.x, obj.y), [
                 ], self.player, self.trigger_spawn_footprint, self.trigger_spawn_soundsource, self.trigger_sound)
@@ -50,7 +50,6 @@ class GameWorld(State):
             if layer.name == 'Sound_Sources':
                 for obj in layer:
                     name, volume, interval, randomness = obj.name.split('_')
-                    print(name, volume, interval, randomness)
                     AmbientSound(self.sound_sprites, name, (obj.x, obj.y), interval,
                                  randomness, volume, self.trigger_sound)
             if layer.name == 'Objects':
@@ -112,18 +111,14 @@ class GameWorld(State):
         self.game.fsm.push('level_intro')
 
     def suspend(self):
-        print('GameWorld suspend')
         # Call when a new state is pushed on top of the current one
         pass
 
     def wakeup(self):
-        print('GameWorld wakeup')
-        # self.startup()
         # Call when the state ontop of this one is popped
         pass
 
     def cleanup(self):
-        # print('GameWorld cleanup')
         # Call when state is pop from the stack
         pass
 
@@ -202,6 +197,16 @@ class GameWorld(State):
     def trigger_spawn_soundsource(self, pos, volume, origin):
         SoundSource([self.alpha_sprites], self.collision_sprites, pos,
                     volume, origin)
+
+    def pickup_item(self):
+        closest_item = get_closest_sprite_of_group(
+            self.player, self.key_sprites)
+        distance, _ = get_distance_direction_a_to_b(
+            self.player.pos, closest_item.pos)
+        if distance < OBJECT_PULLING_RADIUS:
+            return closest_item
+        else:
+            return None
 
     def check_death(self):
         if hasattr(self, 'enemy'):

@@ -34,7 +34,6 @@ class SoundPlayer:
             # door movement
             'door': [pygame.mixer.Sound(os.path.join(base_path,  'objects', 'door.wav'))],
         }
-        print(self.sounds['voices'])
 
     def play_random_sound(self, pos, volume, sound_type):
         if sound_type == 'voices':

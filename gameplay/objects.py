@@ -23,8 +23,6 @@ class AmbientSound(pygame.sprite.Sprite):
 
     def cooldown(self):
         current_time = pygame.time.get_ticks()
-        print(current_time, self.last_played, self.interval)
-
         if not self.play:
             if current_time - self.last_played >= self.interval * (1 + choice([-1, 1]) * random() * self.randomness):
                 self.play = True
@@ -43,8 +41,6 @@ class Key(pygame.sprite.Sprite):
 
         self.color = color
 
-        # self.image = pygame.image.load(os.path.join(
-        #     'assets', 'graphics', 'objects', f'key_{color}', f'key_{color}_0.png'))
         self.image = surf
         self.rect = self.image.get_rect(topleft=pos)
 
@@ -53,66 +49,6 @@ class Key(pygame.sprite.Sprite):
         self.hitbox = self.rect
         self.hitbox.center = self.pos
         self.collision_groups = collision_groups
-
-        self.pulling_entity = player
-        self.is_pulled = False
-
-    def check_pulling(self, actions):
-        if self.is_pulled:
-            distance, _ = get_distance_direction_a_to_b(
-                self.pos, self.pulling_entity.pos)
-            if distance >= 1.5 * OBJECT_PULLING_RADIUS or actions['e']:
-                self.is_pulled = False
-
-        else:
-            distance, _ = get_distance_direction_a_to_b(
-                self.pos, self.pulling_entity.pos)
-            if distance <= OBJECT_PULLING_RADIUS and actions['e']:
-                self.is_pulled = True
-
-    def move(self, dt):
-        if self.is_pulled:
-            distance, direction = get_distance_direction_a_to_b(
-                self.pos, self.pulling_entity.pos)
-
-            # TODO: Get the players current speed
-            self.pos += direction * \
-                self.pulling_entity.movement_stats['walk']['speed'] * dt * 60
-
-        self.hitbox.centerx = round(self.pos.x)
-        self.collision('horizontal')
-        self.hitbox.centery = round(self.pos.y)
-        self.collision('vertical')
-
-        self.rect.center = self.hitbox.center
-
-    def collision(self, direction):
-        if direction == 'horizontal':
-            for group in self.collision_groups:
-                for sprite in group:
-                    if sprite.hitbox.colliderect(self.hitbox):
-                        if self.direction.x > 0:    # moving right
-                            self.pos.x = sprite.hitbox.left - self.hitbox.width / 2
-                        elif self.direction.x < 0:    # moving left
-                            self.pos.x = sprite.hitbox.right + self.hitbox.width / 2
-                        self.hitbox.centerx = round(self.pos.x)
-                        self.rect.centerx = round(self.pos.x)
-
-        if direction == 'vertical':
-            for group in self.collision_groups:
-                for sprite in group:
-                    if sprite.hitbox.colliderect(self.hitbox):
-                        if self.direction.y > 0:    # moving down
-                            self.pos.y = sprite.hitbox.top - self.hitbox.height / 2
-                        elif self.direction.y < 0:    # moving up
-                            self.pos.y = sprite.hitbox.bottom + self.hitbox.height / 2
-                        self.hitbox.centery = round(self.pos.y)
-                        self.rect.centery = round(self.pos.y)
-
-    def update(self, dt, actions):
-        # self.input(actions)
-        self.check_pulling(actions)
-        self.move(dt)
 
 
 class Keyhole(pygame.sprite.Sprite):

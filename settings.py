@@ -52,7 +52,7 @@ enemy_data = {
     'curious_noise_threshold': 4,
     'attack_noise_threshold': 16,
     'noise_decay': 2,
-    'noise_sensitivity_list': ['player', 'player_item'],
+    'noise_sensitivity_list': ['player', 'player_metal', 'player_stomp', 'player_item'],
     'movement': {
         'idle': {
             'speed': 0,
@@ -77,8 +77,8 @@ level_data = {
     0: {
         'intro_text': [
             'You wake up from a nightmare',
-            'Soaked in cold sweat',
             'A perfect darkness fills your room',
+            'You try to orientate yourself'
             '...',
             'Hold [W,A,S,D] to move.',
             'Press [ENTER] to continue.'
@@ -94,7 +94,7 @@ level_data = {
             'You reach the light switch and flick it',
             'But still, all you see is darkness',
             '...',
-            'You hear an all familiar sound from the hallway',
+            'You hear a familiar sound from the hallway',
             'It\'s your dog\'s squeaking toy.',
             '...',
             'Press [SPACE] to stomp',
@@ -158,9 +158,9 @@ level_data = {
 # FOOTSTEP_DISTANCE = 20  # 40  # 120 for enemy?  # 40 for player
 # FOOTSTEP_VOLUME = 15
 FOOTSTEP_FADEOUT = 20
-LINE_DURATION = 1500  # 1500  # Debug 5 # 1500
+LINE_DURATION = 1500  # 1500  # 1500  # Debug 5 # 1500
 
-OBJECT_PULLING_RADIUS = 50
+OBJECT_PULLING_RADIUS = 25
 
 FADEOUT_DECAY_TIME = 0.005
 

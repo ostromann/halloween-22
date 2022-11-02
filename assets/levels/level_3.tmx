@@ -81,16 +81,16 @@
   <object id="481" x="65" y="155" width="10" height="10"/>
   <object id="482" x="85" y="155" width="10" height="10"/>
   <object id="483" x="45" y="155" width="10" height="10"/>
-  <object id="486" x="570" y="65" width="50" height="30"/>
+  <object id="486" x="570" y="10" width="50" height="85"/>
   <object id="487" x="140" y="310" width="30" height="30"/>
   <object id="489" x="560" y="340" width="35" height="40"/>
   <object id="490" x="275" y="360" width="30" height="35"/>
-  <object id="491" x="280" y="25" width="25" height="30"/>
+  <object id="491" x="280" y="5" width="25" height="50"/>
   <object id="504" x="685" y="250" width="25" height="30"/>
   <object id="505" x="635" y="160" width="35" height="40"/>
   <object id="506" x="470" y="340" width="50" height="30"/>
   <object id="508" x="90" y="80" width="25" height="30"/>
-  <object id="509" x="160" y="40" width="50" height="30"/>
+  <object id="509" x="160" y="10" width="50" height="60"/>
   <object id="510" x="210" y="340" width="20" height="25"/>
   <object id="511" x="10" y="420" width="35" height="40"/>
   <object id="512" x="65" y="435" width="30" height="30"/>
@@ -103,16 +103,16 @@
   <object id="519" x="510" y="355" width="50" height="30"/>
   <object id="520" x="445" y="370" width="20" height="25"/>
   <object id="522" x="245" y="355" width="30" height="35"/>
-  <object id="525" x="375" y="30" width="30" height="30"/>
-  <object id="526" x="480" y="50" width="50" height="30"/>
-  <object id="544" x="30" y="385" width="20" height="25"/>
+  <object id="525" x="375" y="15" width="30" height="45"/>
+  <object id="526" x="480" y="10" width="50" height="70"/>
+  <object id="544" x="30" y="385" width="20" height="35"/>
   <object id="545" x="105" y="410" width="20" height="25"/>
   <object id="546" x="635" y="20" width="30" height="40"/>
   <object id="547" x="670" y="70" width="35" height="40"/>
-  <object id="548" x="90" y="35" width="25" height="30"/>
-  <object id="549" x="25" y="25" width="50" height="30"/>
+  <object id="548" x="90" y="5" width="50" height="60"/>
+  <object id="549" x="10" y="10" width="65" height="45"/>
   <object id="550" x="20" y="85" width="50" height="30"/>
-  <object id="551" x="655" y="165" width="35" height="40"/>
+  <object id="551" x="650" y="165" width="65" height="45"/>
   <object id="552" x="595" y="200" width="25" height="30"/>
   <object id="553" x="620" y="250" width="25" height="30"/>
   <object id="554" x="655" y="370" width="60" height="30"/>
@@ -120,23 +120,20 @@
   <object id="556" x="75" y="385" width="20" height="25"/>
   <object id="557" x="40" y="370" width="20" height="25"/>
   <object id="558" x="90" y="425" width="20" height="25"/>
-  <object id="559" x="25" y="70" width="20" height="25"/>
-  <object id="560" x="35" y="55" width="20" height="25"/>
-  <object id="561" x="105" y="65" width="20" height="25"/>
-  <object id="562" x="115" y="50" width="20" height="25"/>
+  <object id="559" x="10" y="70" width="35" height="25"/>
+  <object id="560" x="10" y="55" width="45" height="25"/>
+  <object id="561" x="105" y="50" width="20" height="40"/>
   <object id="563" x="55" y="115" width="20" height="25"/>
   <object id="564" x="65" y="100" width="20" height="25"/>
   <object id="565" x="70" y="10" width="20" height="25"/>
-  <object id="566" x="80" y="-5" width="20" height="25"/>
   <object id="567" x="690" y="25" width="20" height="25"/>
   <object id="568" x="660" y="15" width="20" height="25"/>
   <object id="569" x="650" y="75" width="20" height="25"/>
-  <object id="570" x="620" y="60" width="20" height="25"/>
+  <object id="570" x="620" y="15" width="20" height="70"/>
   <object id="571" x="660" y="65" width="20" height="25"/>
   <object id="572" x="685" y="55" width="20" height="25"/>
   <object id="573" x="635" y="390" width="20" height="25"/>
   <object id="574" x="640" y="435" width="20" height="25"/>
-  <object id="575" x="650" y="185" width="20" height="25"/>
   <object id="576" x="635" y="200" width="20" height="25"/>
   <object id="577" x="675" y="235" width="20" height="25"/>
   <object id="578" x="660" y="250" width="20" height="25"/>

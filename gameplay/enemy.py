@@ -359,7 +359,7 @@ class Enemy(pygame.sprite.Sprite):
         self.trigger_spawn_soundsource(self.pos, 8, 'enemy')
 
     def spawn_footprint(self):
-        offset_pos = self.direction * 20
+        offset_pos = self.direction * 5
         self.trigger_spawn_footprint(
             self.pos+offset_pos, self.direction, self.movement['footstep_volume'], self.left, 'enemy')
         self.left = not self.left
@@ -368,6 +368,7 @@ class Enemy(pygame.sprite.Sprite):
     def update_noise_meter(self):
         for sound in self.sound_sprites:
             if sound.rect.colliderect(self.hitbox):
+                # print(f'sound collision detected with {sound.origin_type}')
                 if sound.origin_type in enemy_data['noise_sensitivity_list']:
                     if sound.source not in self.noise_meter.keys():
                         self.noise_meter[sound.source] = {
@@ -389,7 +390,8 @@ class Enemy(pygame.sprite.Sprite):
                 if val['volume'] > loudest_source:
                     loudest_source = val['volume']
                     loudest_source_dict = val
-        print(loudest_source_dict)
+        # if ENEMY_DEBUG:
+        #     print(f'loudest source: {loudest_source_dict}')
         return loudest_source_dict
 
     def decay_noise_meter(self, dt):

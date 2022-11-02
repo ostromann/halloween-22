@@ -34,7 +34,7 @@ class Game():
             'ENTER': False,
             'TAB': False,
         }
-        self.dt, self.prev_time, self.cumulative_dt = 0, 0, 0
+        self.dt, self.prev_time = 0, 0
 
         # level index
         self.level = 0

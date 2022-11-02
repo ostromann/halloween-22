@@ -6,20 +6,20 @@
    <property name="object_color" value="blue"/>
    <property name="object_type" value="key"/>
   </properties>
-  <image width="20" height="20" source="../objects/runestone_blue/runestone_blue0.png"/>
+  <image width="20" height="20" source="../objects/key_blue/key_blue_0.png"/>
  </tile>
  <tile id="3">
-  <image width="20" height="20" source="../objects/runstone_orange/runestine_orange_0.png"/>
+  <image width="20" height="20" source="../objects/key_orange/key_orange_0.png"/>
  </tile>
  <tile id="4">
   <properties>
    <property name="object_color" value="blue"/>
    <property name="object_type" value="keyhole"/>
   </properties>
-  <image width="20" height="20" source="../objects/keyhole_blue/keyhole_blue0.png"/>
+  <image width="20" height="20" source="../objects/keyhole_blue/keyhole_blue_0.png"/>
  </tile>
  <tile id="5">
-  <image width="20" height="20" source="../objects/keyhole_orange/keyhole_orange0.png"/>
+  <image width="20" height="20" source="../objects/keyhole_orange/keyhole_orange_0.png"/>
  </tile>
  <tile id="6">
   <image width="20" height="20" source="../objects/grating/grating.png"/>

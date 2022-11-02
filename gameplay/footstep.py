@@ -15,7 +15,6 @@ class FootprintPlayer():
             'player': import_image_folder(os.path.join(base_path, 'player')),
             'enemy': import_image_folder(os.path.join(base_path, 'enemy')),
         }
-        print(self.frames)
 
     def create_footprint(self, groups, pos, direction, volume, left, origin):
         animation_frames = self.frames[origin]
@@ -60,13 +59,5 @@ class Footprint(pygame.sprite.Sprite):
         else:
             self.image = self.frames[int(self.frame_index)]
 
-    # def decay(self, dt):
-    #     if self.brightness >= 20:
-    #         self.brightness -= FOOTSTEP_FADEOUT * dt
-    #         print(self.brightness)
-    #     self.image = self.image.convert_alpha()
-    #     self.image.set_alpha(self.brightness)
-
     def update(self, dt, actions):
         self.animate(dt)
-        # self.decay(dt)
