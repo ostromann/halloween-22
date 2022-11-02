@@ -41,7 +41,7 @@ player_data = {
     }
 }
 
-
+ENEMY_IDLE_NOISE_PROBABILITY = 0.9
 enemy_data = {
     'max_attack_time': 10000,
     'waypoint_radius': 20,

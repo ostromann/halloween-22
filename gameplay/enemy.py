@@ -1,6 +1,6 @@
 from math import sin
 import pygame
-from random import randint
+from random import randint, random
 
 from gameplay.footstep import Footprint
 from gameplay.utils import *
@@ -58,7 +58,7 @@ class IdleState(EnemyTimedState):
         self.sprite.target_pos = self.sprite.pos
         self.sprite.movement = enemy_data['movement']['walk']
 
-        self.make_noise = not randint(0, 5)
+        self.make_noise = True if random() < ENEMY_IDLE_NOISE_PROBABILITY else False
         if self.make_noise:
             self.sprite.make_noise('enemy_idle')
 
@@ -136,7 +136,6 @@ class CuriousRealizationState(EnemyTimedState):
             self.sprite.entity_fsm.switch('attack')
 
         if self.done:
-            # self.done = False
             self.sprite.entity_fsm.pop()  # Curious should be below it
 
 

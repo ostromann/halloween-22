@@ -165,8 +165,9 @@ class GameWorld(State):
         self.display_surface.blit(self.footprint_surf, (0, 0))
 
         if ENEMY_DEBUG:
-            debug(self.display_surface,
-                  f'{self.enemy.entity_fsm.state_stack}')
+            if len(self.enemy.entity_fsm.state_stack) > 0:
+                debug(self.display_surface,
+                      f'{self.enemy.entity_fsm.state_stack[-1]}')
             debug(self.display_surface,
                   f'{len(self.enemy.entity_fsm.state_stack)}', 30)
             debug(self.display_surface,
