@@ -37,7 +37,7 @@ class GameWorld(State):
                     [self.visible_sprites], self.collision_sprites, (obj.x, obj.y), self.trigger_spawn_footprint, self.trigger_spawn_soundsource, self.trigger_sound, self.pickup_item)
             if obj.name == 'enemy_spawn':
                 self.enemy = Enemy([self.visible_sprites], self.collision_sprites, self.alpha_sprites, (obj.x, obj.y), [
-                ], self.player, self.trigger_spawn_footprint, self.trigger_spawn_soundsource, self.trigger_sound)
+                ], self.player, self.trigger_spawn_footprint, self.trigger_spawn_soundsource, self.trigger_sound, self.trigger_screen_shake)
             if obj.name == 'level_goal':
                 self.level_goal = LevelGoal(obj, [self.visible_sprites])
 
@@ -179,7 +179,6 @@ class GameWorld(State):
                 debug(self.display_surface, int(1/self.game.dt))
 
     # ---- SOUNDS ----
-
     def trigger_sound(self, pos, volume, sound_type):
         self.sound_player.play_random_sound(pos, volume, sound_type)
         self.trigger_spawn_soundsource(pos, volume, sound_type)
@@ -198,6 +197,9 @@ class GameWorld(State):
     def trigger_spawn_soundsource(self, pos, volume, origin):
         SoundSource([self.alpha_sprites], self.collision_sprites, pos,
                     volume, origin)
+
+    def trigger_screen_shake(self, intensity):
+        self.game.screen_shake = intensity
 
     def pickup_item(self):
         closest_item = get_closest_sprite_of_group(

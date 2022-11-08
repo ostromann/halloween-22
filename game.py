@@ -1,4 +1,5 @@
 import os
+from random import choice, randint
 import time
 import pygame
 import json
@@ -54,6 +55,9 @@ class Game():
             'assets', 'audio', 'music', 'ambience.ogg'))
         main_sound.set_volume(0.8)
         main_sound.play(loops=-1)
+
+        # screen shake
+        self.screen_shake = pygame.math.Vector2()
 
     def game_loop(self):
         while self.playing:
@@ -135,8 +139,19 @@ class Game():
 
     def render(self):
         self.fsm.render()
+
+        offset = pygame.math.Vector2()
+
+        if self.screen_shake.x > 0:
+            offset.x = choice([-1, 1]) * randint(0, self.screen_shake.x)
+            self.screen_shake.x -= 1
+
+        if self.screen_shake.y > 0:
+            offset.y = choice([-1, 1]) * randint(0, self.screen_shake.y)
+            self.screen_shake.y -= 1
+
         self.screen.blit(pygame.transform.scale(
-            self.game_canvas, (self.SCREEN_WIDTH, self.SCREEN_HEIGHT)), (0, 0))
+            self.game_canvas, (self.SCREEN_WIDTH, self.SCREEN_HEIGHT)), offset)
         pygame.display.flip()
 
     def get_dt(self):

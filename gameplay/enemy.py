@@ -213,9 +213,9 @@ class RoarState(EnemyTimedState):
         self.start_time = pygame.time.get_ticks()
         self.sprite.movement = enemy_data['movement']['idle']
         self.sprite.target_pos = self.sprite.pos
-        # TODO: trigger sound roar
 
         self.sprite.make_noise('enemy_roar')
+        self.sprite.trigger_screen_shake(pygame.math.Vector2(30, 30))
 
     def update(self, dt, actions):
         self.check_expiration()
@@ -265,7 +265,7 @@ class AttackState(EnemyTimedState):
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, groups, collision_sprites, sound_sprites, pos, waypoints, player, trigger_spawn_footprint, trigger_spawn_soundsource, trigger_sound):
+    def __init__(self, groups, collision_sprites, sound_sprites, pos, waypoints, player, trigger_spawn_footprint, trigger_spawn_soundsource, trigger_sound, trigger_screen_shake):
 
         # general setup
         super().__init__(groups)
@@ -292,6 +292,7 @@ class Enemy(pygame.sprite.Sprite):
         self.trigger_spawn_footprint = trigger_spawn_footprint
         self.trigger_spawn_soundsource = trigger_spawn_soundsource
         self.trigger_sound = trigger_sound
+        self.trigger_screen_shake = trigger_screen_shake
 
         # interaction
         self.noise_meter = {}
@@ -363,6 +364,9 @@ class Enemy(pygame.sprite.Sprite):
             self.pos+offset_pos, self.direction, self.movement['footstep_volume'], self.left, 'enemy')
         self.left = not self.left
         self.distance_travelled = 0
+
+        # self.trigger_screen_shake(pygame.math.Vector2(
+        #     0, self.movement['footstep_volume']))
 
     def update_noise_meter(self):
         for sound in self.sound_sprites:

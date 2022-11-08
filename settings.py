@@ -78,7 +78,7 @@ level_data = {
         'intro_text': [
             'You wake up from a nightmare',
             'A perfect darkness fills your room',
-            'You try to orientate yourself'
+            'You try to orientate yourself',
             '...',
             'Hold [W,A,S,D] to move.',
             'Press [ENTER] to continue.'
