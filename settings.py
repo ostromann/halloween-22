@@ -4,8 +4,8 @@ PLAYER_DEBUG = False
 FPS_DEBUG = False
 
 # game setup
-WIDTH = 720  # 480  # 720
 HEIGHT = 480  # 360  # 480
+WIDTH = 720  # 480  # 720
 FPS = 60
 # INPUT = 'ps4'
 # CONTROLLER_DEADZONE = 0.3
